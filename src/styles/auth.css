@@ -1,0 +1,14 @@
+.auth-block {
+    width: 400px;
+    margin: 0 auto;
+    border-radius: 30px;
+    background-color: white;
+    padding: 20px;
+}
+
+.auth-container {
+    width: 100vw;
+    height: calc(100vh - 56px);
+    display: flex;
+    align-items: center;
+}
