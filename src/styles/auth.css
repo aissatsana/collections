@@ -12,3 +12,7 @@
     display: flex;
     align-items: center;
 }
+
+.auth-button {
+    width: 100%;
+}
