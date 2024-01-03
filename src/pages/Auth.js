@@ -1,5 +1,4 @@
 import { Container, Form, Button, Alert } from 'react-bootstrap';
-import Header from '../components/Header';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
@@ -44,7 +43,6 @@ function Auth () {
 
     const handleResponse = async (response, successMessage) => {
         if (!response.ok) {
-          const errorData = await response.json();
           setError(errorCodes[response.status] || 'Unknown error');
           return;
         }
@@ -79,8 +77,7 @@ function Auth () {
         setError('');
     }
     return (
-        <div className="bg-light">
-        <Header />
+        <div>
             <Container className="auth-container">
                 <div className="auth-block">
                     <h1>{isRegistration ? 'Sign up' : 'Log in'}</h1>

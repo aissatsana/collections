@@ -1,11 +1,8 @@
 import { Container, Tab, Tabs } from 'react-bootstrap';
-import Header from '../components/Header';
 
 
 function Profile () {
     return (
-        <div className="App">
-            <Header />
             <Container className="mt-3">
                 <h1>Inner page</h1>
                 <Tabs defaultActiveKey="collections" id="uncontrolled-tab-example" className="mb-3">
@@ -17,7 +14,6 @@ function Profile () {
                     </Tab>
                 </Tabs>
             </Container>
-        </div>
     )
 }
 
