@@ -1,31 +1,26 @@
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import Header from '../components/Header';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 
 function Auth () {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUserame] = useState('');
+    const [username, setUsername] = useState('');
     const [isRegistration, setIsRegistration] = useState(false);
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate()
     const errorCodes = {
         500: "Something went wrong, contact support",
         400: "User already exists",
         401: "Invalid email or password",
     };
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    }
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    } 
-    const handleNameChange = (e) => {
-        setUserame(e.target.value);
-    }
+    const handleInputChange = (e, setter) => {
+        setError(null);
+        setter(e.target.value);
+      };
     const handleSubmit = async () => {
         if (isSubmitting) {
           return;
@@ -37,44 +32,40 @@ function Auth () {
           setIsSubmitting(false);
         }
     };
-    const handleLogin = async () => {
-        try {
-            const response = await fetch('/auth/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, password }),
-            });
-      
-            if (!response.ok) {
-              //const errorData = await response.json();
-              setError(errorCodes[response.status] || 'Unknown error');
-              return;
-            }
-            const userData = await response.json();
-            console.log('Login successful:', userData);
-          } catch (error) {
-            setError('Failed to complete login, contact support')
-          }
-    }
-    const handleRegister = async () => {
-        try {
-          const response = await fetch('/auth/register', {
+    const sendRequest = async (url, data) => {
+        return await fetch(url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, email, password }),
-          });
+            body: JSON.stringify(data),
+        });
+    }
+
+    const handleResponse = async (response, successMessage) => {
+        if (!response.ok) {
+          const errorData = await response.json();
+          setError(errorCodes[response.status] || 'Unknown error');
+          return;
+        }
+        const userData = await response.json();
+        console.log(successMessage, userData);
+        navigate('/profile');
+    };
     
-          if (!response.ok) {
-            //const errorData = await response.json();
-            setError(errorCodes[response.status] || 'Unknown error');
-            return;
-          }
-          const userData = await response.json();
-          console.log('Registration successful:', userData);
+
+    const handleLogin = async () => {
+        try {
+            const response = await sendRequest('/auth/login', {email, password});
+            handleResponse(response, 'Login successful')
+        } catch (error) {
+            setError('Failed to complete login, contact support')
+        }
+    }
+    const handleRegister = async () => {
+        try {
+          const response = await sendRequest('/auth/register', { username, email, password})
+          handleResponse(response, 'Registration successful')
         } catch (error) {
           setError('Failed to complete registration, contact support')
         }
@@ -83,7 +74,7 @@ function Auth () {
     const handleToggleMode = () => {
         setIsRegistration(!isRegistration);
         setEmail('');
-        setUserame('');
+        setUsername('');
         setPassword('');
         setError('');
     }
@@ -102,7 +93,8 @@ function Auth () {
                                 placeholder="Enter your name" 
                                 name="username" 
                                 value={username} 
-                                onChange={handleNameChange}
+                                onChange={(e) => handleInputChange(e, setUsername)}
+                                required
                             />
                         </Form.Group>}
                         <Form.Group controlId="email">
@@ -112,7 +104,8 @@ function Auth () {
                                 placeholder="Enter email" 
                                 name="email" 
                                 value={email} 
-                                onChange={handleEmailChange} 
+                                onChange={(e) => handleInputChange(e, setEmail)} 
+                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="password">
@@ -122,7 +115,8 @@ function Auth () {
                                 placeholder="Password" 
                                 name="password" 
                                 value={password} 
-                                onChange={handlePasswordChange} 
+                                onChange={(e) => handleInputChange(e, setPassword)}
+                                required 
                             />
                         </Form.Group>
                         <Button className="mt-3 auth-button" variant="dark" onClick={handleSubmit} disabled={isSubmitting}>
