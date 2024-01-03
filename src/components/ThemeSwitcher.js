@@ -7,7 +7,7 @@ function ThemeSwitcher () {
         toggleTheme(theme === 'light' ? 'dark' : 'light');
     }
     return (
-        <div className="ms-auto me-4">
+        <div className="me-4">
           <Button className="ms-2" variant="info" onClick={onToggleTheme}>
             {theme === 'light' ? (
                 <i className="bi bi-moon"></i>

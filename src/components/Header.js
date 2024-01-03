@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Navbar, Form, FormControl } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ThemeSwitcher from './ThemeSwitcher';
+import LangSwitcher from './LangSwitcher';
 
 const Header = () => {
     return (
@@ -11,7 +12,8 @@ const Header = () => {
             <Form inline="true">
                 <FormControl type="text" placeholder="Search..." className="mr-sm-2" />
             </Form>
-            <ThemeSwitcher className="ms-auto me-4" />
+            <LangSwitcher />
+            <ThemeSwitcher />
             <Link to="/auth" className="btn">
               Log in
             </Link>
