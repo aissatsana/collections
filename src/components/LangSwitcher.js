@@ -1,19 +1,21 @@
 import { Dropdown, ButtonGroup } from "react-bootstrap";
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function LangSwitcher () {
-    const [language, setLanguage] = useState('en');
-    const toggleLanguage = () => {
+    const { i18n } = useTranslation();
 
-    }
+    const changeLanguage = (lng) => {
+      i18n.changeLanguage(lng);
+    };
+    
     return (
         <Dropdown as={ButtonGroup} className="ms-auto me-4">
         <Dropdown.Toggle variant="secondary" id="language-dropdown">
-            {language === 'en' ? 'English' : 'Русский'}
+            {i18n.language === 'en' ? 'English' : 'Русский'}
         </Dropdown.Toggle>
         <Dropdown.Menu>
-            <Dropdown.Item onClick={toggleLanguage}>English</Dropdown.Item>
-            <Dropdown.Item onClick={toggleLanguage}>Русский</Dropdown.Item>
+            <Dropdown.Item onClick={() => changeLanguage('en')}>English</Dropdown.Item>
+            <Dropdown.Item onClick={() => changeLanguage('ru')}>Русский</Dropdown.Item>
         </Dropdown.Menu>
         </Dropdown>
     )   

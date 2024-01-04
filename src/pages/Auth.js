@@ -2,8 +2,10 @@ import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
+import { useTranslation } from 'react-i18next';
 
 function Auth () {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -76,18 +78,19 @@ function Auth () {
         setPassword('');
         setError('');
     }
+    
     return (
         <div>
             <Container className="auth-container">
                 <div className="auth-block">
-                    <h1>{isRegistration ? 'Sign up' : 'Log in'}</h1>
+                    <h1>{isRegistration ? t('Sign up') : t('Log in')}</h1>
                     <Form>
                         {isRegistration &&                        
                         <Form.Group controlId="username">
-                            <Form.Label>Name:</Form.Label>
+                            <Form.Label>{t('Name')}:</Form.Label>
                             <Form.Control 
                                 type="name" 
-                                placeholder="Enter your name" 
+                                placeholder={t('Enter your name')} 
                                 name="username" 
                                 value={username} 
                                 onChange={(e) => handleInputChange(e, setUsername)}
@@ -98,7 +101,7 @@ function Auth () {
                             <Form.Label>Email:</Form.Label>
                             <Form.Control 
                                 type="email" 
-                                placeholder="Enter email" 
+                                placeholder={t('Enter email')}
                                 name="email" 
                                 value={email} 
                                 onChange={(e) => handleInputChange(e, setEmail)} 
@@ -106,10 +109,10 @@ function Auth () {
                             />
                         </Form.Group>
                         <Form.Group controlId="password">
-                            <Form.Label>Password:</Form.Label>
+                            <Form.Label>{t('Password')}:</Form.Label>
                             <Form.Control 
                                 type="password" 
-                                placeholder="Password" 
+                                placeholder={t('Enter password')}
                                 name="password" 
                                 value={password} 
                                 onChange={(e) => handleInputChange(e, setPassword)}
@@ -117,16 +120,16 @@ function Auth () {
                             />
                         </Form.Group>
                         <Button className="mt-3 auth-button" variant="dark" onClick={handleSubmit} disabled={isSubmitting}>
-                            {isRegistration ? 'Register' : 'Log In'}
+                            {isRegistration ? t('Register') : t('Log in')}
                         </Button>
                     </Form>
                     {error && <Alert className="mt-2" variant="danger">{error}</Alert>}
                     <p className="mt-2">
                         {isRegistration
-                        ? 'Already have an account?'
-                        : "Don't have an account?"}
+                        ? t("Already have an account?")
+                        : t("Don't have an account?")}
                         <Link to="#" onClick={handleToggleMode} disabled={isSubmitting}>
-                        {isRegistration ? ' Log in' : ' Sign up'}
+                        {isRegistration ? t('Log in') : t('Sign up')}
                         </Link>
                     </p>
                 </div>
