@@ -8,6 +8,7 @@ import { useState, React, useEffect } from 'react';
 import './App.css';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './contexts/i18n';
+import CreateCollection from './pages/Create-collection';
 
 function App() {
   const { theme } = useTheme();
@@ -26,6 +27,7 @@ function App() {
             <Route path="/" element={<Main />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/create-collection" element={<CreateCollection />} />
           </Routes>
         </div>
       </Router>

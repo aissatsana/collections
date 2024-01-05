@@ -1,5 +1,5 @@
 import { Container, Tab, Tabs } from 'react-bootstrap';
-import Collections from '../components/Collections';
+import MyCollections from '../components/MyCollections';
 
 
 function Profile () {
@@ -8,7 +8,7 @@ function Profile () {
                 <h1>Inner page</h1>
                 <Tabs defaultActiveKey="collections" id="uncontrolled-tab-example" className="mb-3">
                     <Tab eventKey="collections" title="Collections">
-                        <Collections />
+                        <MyCollections />
                     </Tab>
                     <Tab eventKey="profile" title="Profile">
                         Tab content for Profile

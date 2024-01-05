@@ -8,9 +8,26 @@
     "Don't have an account?": "Еще нет аккаунта?",
     "Password": "Пароль",
     "Enter email": "Введите email",
-    "Name": "Ваше имя",
+    "Name": "Имя",
     "Enter your name": "Введите ваше имя",
     "Enter password": " Введите пароль",
-    "Search": "Поиск"
+    "Search": "Поиск",
+    "Add new collection": "Добавить новую коллекцию",
+    "Description": "Описание",
+    "Theme": "Тема",
+    "Image": "Изображение",
+    "Create collection": "Создать коллекцию",
+    "String fields": "Строковые поля",
+    "Number fields": "Числовые поля",
+    "Yes/No fields": "Да/нет поля",
+    "Date fields": "Поля для даты",
+    "Text fields": "Текстовые поля",
+    "Name for Field": "Имя для поля",
+    "Enter name for string field": "Введите имя для строкового поля",
+    "Enter name for integer field": "Введите имя для числового поля",
+    "Enter name for boolean field": "Введите имя для поля да/нет",
+    "Enter name for text field": "Введите имя для текстового поля",
+    "Enter name for date field": "Введите имя для поля даты",
+    "Select Theme": "Выберите тему"
 }
   
