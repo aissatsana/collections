@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
 
 function Auth () {
     const { t } = useTranslation();
@@ -13,6 +14,7 @@ function Auth () {
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate()
+    const { setAuthStatus } = useAuth();
     const errorCodes = {
         500: "Something went wrong, contact support",
         400: "User already exists",
@@ -50,6 +52,7 @@ function Auth () {
         }
         const userData = await response.json();
         console.log(successMessage, userData);
+        setAuthStatus(true);
         navigate('/profile');
     };
     

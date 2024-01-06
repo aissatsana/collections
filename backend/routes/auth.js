@@ -1,7 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { Pool } = require('pg');
-//const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 const pool = new Pool({
@@ -12,6 +11,7 @@ const pool = new Pool({
     port: 5432,
     ssl: true,
 });
+
 
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
@@ -42,14 +42,18 @@ router.post('/login', async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-        //const token = jwt.sign({ userId: user.id, email: user.email }, 'your-secret-key', { expiresIn: '1h' });
-        //res.json({ token });
+        req.session.user = user;
         res.json({ message: 'Успешный вход' });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+router.get('/isAuthenticated', (req, res) => {
+    console.log(!!req.session.user);
+    return res.json({isAuthenticated: !!req.session.user})
+})
 
   
 

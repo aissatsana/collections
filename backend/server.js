@@ -3,9 +3,18 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth'); 
 const path = require('path');
 const http = require('http');
+const session = require('express-session');
+const crypto = require('crypto');
 
 const app = express();
 const port = process.env.PORT || 3001;
+const secretKey = crypto.randomBytes(32).toString('hex');
+app.use(session({
+  secret: secretKey,
+  resave: false,
+  saveUninitialized: true
+}));
+
 app.use(express.static(path.join(__dirname, '../build')));
 
 app.get('/', (req, res) => {

@@ -5,7 +5,7 @@ function MyCollections () {
     const { t } = useTranslation();
     return (
         <Link to="/create-collection" className="btn">
-        {t('Log in')}
+        {t('Create collection')}
       </Link>
     )
 }
