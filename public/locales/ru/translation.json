@@ -28,6 +28,12 @@
     "Enter name for boolean field": "Введите имя для поля да/нет",
     "Enter name for text field": "Введите имя для текстового поля",
     "Enter name for date field": "Введите имя для поля даты",
-    "Select Theme": "Выберите тему"
+    "Select category": "Выберите категорию",
+    "Category": "Категория",
+    "Books": "Книги",
+    "Movies": "Фильмы",
+    "Sport": "Спорт",
+    "Other": "Другое",
+    "Music": "Музыка"
 }
   

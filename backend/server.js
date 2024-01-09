@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const authRoutes = require('./routes/auth'); 
+const authRoutes = require('./routes/auth');
+//const collectionRoutes = require('./routes/collection'); 
+const dataRoutes = require('./routes/data');
 const path = require('path');
 const http = require('http');
 const session = require('express-session');
@@ -15,6 +17,7 @@ app.use(session({
   saveUninitialized: true
 }));
 
+
 app.use(express.static(path.join(__dirname, '../build')));
 
 app.get('/', (req, res) => {
@@ -26,6 +29,8 @@ const server = http.createServer(app);
 app.use(bodyParser.json());
 
 app.use('/auth', authRoutes);
+app.use('/data', dataRoutes);  
+//app.use('/collection', collectionRoutes);
 
 
 server.listen(port, () => {

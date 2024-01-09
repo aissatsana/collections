@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Form, Button, Container } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import CategorySelector from '../components/CategorySelector';
 
 function CreateCollection() {
     const { t } = useTranslation();
-    const themes = ['Books', 'Movies', 'Music', 'Sports', 'Other'];
-
   const [collectionInfo, setCollectionInfo] = useState({
     name: '',
     description: '',
-    theme: '',
+    category: null,
     image: null,
     fields: {
       string: ['','',''],
@@ -25,7 +24,7 @@ function CreateCollection() {
     const { name, value } = e.target;
     setCollectionInfo((prevInfo) => ({
       ...prevInfo,
-      [name]: value,
+      [name]: name === 'category' ? Number(value) : value,
     }));
   };
 
@@ -80,16 +79,11 @@ function CreateCollection() {
           <Form.Control as="textarea" rows={3} name="description" value={collectionInfo.description} onChange={handleInputChange} required />
         </Form.Group>
         <div className="d-flex my-4">
-          <Form.Group controlId="theme" className="d-flex align-items-end">
-            <Form.Label className="me-2">{t('Theme')}:</Form.Label>
-            <DropdownButton className="me-4" id="theme-dropdown" title={collectionInfo.theme || `${t('Select Theme')}`} onSelect={(selectedTheme) => handleInputChange({ target: { name: 'theme', value: selectedTheme } })}>
-              {themes.map((theme) => (
-                <Dropdown.Item key={theme} eventKey={theme}>
-                  {theme}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
+          <Form.Group controlId="category" className="d-flex align-items-end">
+            <Form.Label className="me-2">{t('Category')}:</Form.Label>
+            <CategorySelector currentCategory={collectionInfo.category} onSelect={(selectedCategory) => handleInputChange({ target: { name: 'category', value: selectedCategory }})} />
           </Form.Group>
+
           <Form.Group controlId="image" className="d-flex align-items-end">
             <Form.Label className="me-2">{t('Image')}:</Form.Label>
             <Form.Control className="me-4" type="file" name="image" onChange={handleImageUpload} />
