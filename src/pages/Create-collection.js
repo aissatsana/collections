@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import CategorySelector from '../components/CategorySelector';
 
 function CreateCollection() {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [collectionInfo, setCollectionInfo] = useState({
     name: '',
     description: '',
@@ -29,6 +29,10 @@ function CreateCollection() {
   };
 
   const handleImageUpload = (e) => {
+    setCollectionInfo((prevInfo) => ({
+      ...prevInfo,
+      image: e.target.files[0],
+    }));
   };
 
   const handleFieldChange = (type, fieldIndex, fieldName) => {
@@ -41,10 +45,42 @@ function CreateCollection() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(collectionInfo);
+    try {
+      let imageUrl = null;
+      if (collectionInfo.image) {
+        const formData = new FormData();
+        formData.append('image', collectionInfo.image);
+        const response = await fetch('/collection/uploadImage', {
+          method: 'POST',
+          body: formData,
+        });
+  
+        const result = await response.json();
+        imageUrl = result.imageUrl; 
+      }
+
+      const updatedCollectionInfo = {
+        ...collectionInfo,
+        image: imageUrl,
+      };
+  
+      const createCollectionResponse = await fetch('/collection/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedCollectionInfo),
+      });
+  
+      const createCollectionResult = await createCollectionResponse.json();
+      console.log(createCollectionResult);
+    } catch (error) {
+      console.error('Error uploading collection:', error);
+    }
   };
+  
 
   const renderFieldSelector = (type, label) => {
     return (

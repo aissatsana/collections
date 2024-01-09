@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
-//const collectionRoutes = require('./routes/collection'); 
+const collectionRoutes = require('./routes/collection'); 
 const dataRoutes = require('./routes/data');
 const path = require('path');
 const http = require('http');
@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 
 app.use('/auth', authRoutes);
 app.use('/data', dataRoutes);  
-//app.use('/collection', collectionRoutes);
+app.use('/collection', collectionRoutes);
 
 
 server.listen(port, () => {
