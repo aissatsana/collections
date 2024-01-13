@@ -1,7 +1,6 @@
 const { Storage } = require('@google-cloud/storage');
 const pool = require('../ utils/db');
 
-
 const storage = new Storage({
   projectId: 'my-collection-410422',
   keyFilename: 'keyfile.json',
@@ -9,10 +8,28 @@ const storage = new Storage({
 
 const bucketName = 'my-collection-app';
 const bucket = storage.bucket(bucketName);
-
-function createCollection(collectionInfo) {
-    return; 
-}
+const createCollection = async (collectionData) => {
+  try {
+      const {
+          name,
+          description,
+          image_url,
+          user_id,
+          category_id,
+          ...customFields
+      } = collectionData;
+      const query = `
+          INSERT INTO collections (name, description, image_url, user_id, category_id, ${Object.keys(customFields).join(', ')})
+          VALUES ($1, $2, $3, $4, $5, ${Object.values(customFields).map((_, index) => `$${index + 6}`).join(', ')})
+          RETURNING *;
+      `;
+      const values = [name, description, image_url, user_id, category_id, ...Object.values(customFields)];
+      const result = await pool.query(query, values);
+      return result.rows[0];
+  } catch (error) {
+      throw error;
+  }
+};
 
 function uploadImage(fileBuffer, fileName) {
     return new Promise((resolve, reject) => {
@@ -29,13 +46,27 @@ function uploadImage(fileBuffer, fileName) {
       });
 
       stream.on('finish', () => {
-        resolve(`gs://${bucketName}/${file.name}`);
+        resolve(`${file.name}`);
       });
 
       stream.end(fileBuffer);
     });
+}
+
+async function getImageUrl(fileName) {
+  try {
+    const options = {
+      action: 'read',
+      expires: Date.now() + 15 * 60 * 1000, 
+    };
+    const [signedUrl] = await bucket.file(`${fileName}`).getSignedUrl(options);
+
+    return signedUrl;
+  } catch (error) {
+    console.error('Error getting image URL:', error);
+    throw error;
   }
-  
+}
 
 
 function getContentType(fileName) {
@@ -55,4 +86,5 @@ function getContentType(fileName) {
 module.exports = {
     createCollection,
     uploadImage,
+    getImageUrl,
 };

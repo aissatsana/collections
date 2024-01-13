@@ -12,7 +12,7 @@ function CreateCollection() {
     image: null,
     fields: {
       string: ['','',''],
-      integer: ['', '', ''],
+      int: ['', '', ''],
       text: ['', '', ''],
       boolean: ['', '', ''],
       date: ['', '', ''],
@@ -127,7 +127,7 @@ function CreateCollection() {
         </div>
 
         {renderFieldSelector('string', 'String fields')}
-        {renderFieldSelector('integer', 'Number fields')}
+        {renderFieldSelector('int', 'Number fields')}
         {renderFieldSelector('text', 'Text fields')}
         {renderFieldSelector('boolean', `Yes/No fields`)}
         {renderFieldSelector('date', 'Date fields')}
