@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Container } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CategorySelector from '../components/CategorySelector';
 
 function CreateCollection() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { collectionId } = useParams();
   const [collectionInfo, setCollectionInfo] = useState({
     name: '',
     description: '',
@@ -19,6 +22,21 @@ function CreateCollection() {
     },
   });
 
+  useEffect(() => {
+    if (collectionId) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`/api/collection/${collectionId}`);
+          const data = await response.json();
+          console.log(data.collection);
+          setCollectionInfo(data.collection);
+        } catch (error) {
+          console.error('Error fetching collection:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [collectionId]);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +70,7 @@ function CreateCollection() {
       if (collectionInfo.image) {
         const formData = new FormData();
         formData.append('image', collectionInfo.image);
-        const response = await fetch('/collection/uploadImage', {
+        const response = await fetch('/api/collection/uploadImage', {
           method: 'POST',
           body: formData,
         });
@@ -65,8 +83,12 @@ function CreateCollection() {
         ...collectionInfo,
         image: imageUrl,
       };
-  
-      const createCollectionResponse = await fetch('/collection/create', {
+      
+      let apiUrl = '/api/collection/create';
+      if (collectionId) {
+        apiUrl = `/api/collection/update/${collectionId}`;
+      }
+      const createCollectionResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,6 +98,7 @@ function CreateCollection() {
   
       const createCollectionResult = await createCollectionResponse.json();
       console.log(createCollectionResult);
+      navigate('/profile');
     } catch (error) {
       console.error('Error uploading collection:', error);
     }
@@ -104,7 +127,7 @@ function CreateCollection() {
 
   return (
     <Container className="mt-3">
-      <h1>Create Collection</h1>
+      <h1>{collectionId ? t("Edit Collection") : t("Create Collection")}</h1>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="name">
           <Form.Label>{t('Name')}:</Form.Label>
@@ -123,16 +146,19 @@ function CreateCollection() {
           <Form.Group controlId="image" className="d-flex align-items-end">
             <Form.Label className="me-2">{t('Image')}:</Form.Label>
             <Form.Control className="me-4" type="file" name="image" onChange={handleImageUpload} />
+            {collectionId && collectionInfo.image && (
+              <img src={collectionInfo.image} alt="Collection Thumbnail" style={{ maxHeight: '50px', maxWidth: '50px', objectFit: 'cover' }} />
+            )}
           </Form.Group>
         </div>
 
-        {renderFieldSelector('string', 'String fields')}
+        {/* {renderFieldSelector('string', 'String fields')}
         {renderFieldSelector('int', 'Number fields')}
         {renderFieldSelector('text', 'Text fields')}
         {renderFieldSelector('boolean', `Yes/No fields`)}
-        {renderFieldSelector('date', 'Date fields')}
+        {renderFieldSelector('date', 'Date fields')} */}
         <Button variant="primary" type="submit">
-          {t('Create collection')}
+          {collectionId ? t("Update Collection") : t('Create collection')}
         </Button>
       </Form>
     </Container>

@@ -33,7 +33,7 @@ const CategorySelector = ({ onSelect, currentCategory }) => {
     <DropdownButton className="me-4" id="category-dropdown" title={getTitle()} onSelect={onSelect}>
       {categories.map((category) => (
         <Dropdown.Item key={category.id} eventKey={category.id}>
-          {category.name}
+          {t(category.name)}
         </Dropdown.Item>
       ))}
     </DropdownButton>

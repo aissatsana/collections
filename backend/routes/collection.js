@@ -84,4 +84,57 @@ router.get('/userCollections', async (req, res) => {
   }
 });
 
+router.get('/:collectionId', async (req, res) => {
+  try {
+    const collectionId = req.params.collectionId;
+    const query = `
+      SELECT * FROM collections
+      WHERE id = $1;
+    `;
+    const result = await pool.query(query, [collectionId]);
+    const collection = result.rows[0];
+    if (collection.image_url) {
+      const imageUrl = await collectionService.getImageUrl(collection.image_url);
+      collection.image_url = imageUrl;
+    }
+    res.status(200).json({ collection });
+  } catch (error) {
+    console.error('Error fetching user collections:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.delete('/delete/:collectionId', async (req, res) => {
+  try {
+    const collectionId = req.params.collectionId;
+    const query = `DELETE FROM collections WHERE id = $1`;
+    const result = await pool.query(query, [collectionId]);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error deleting collection:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
+router.post('/update/:collectionId', async (req, res) => {
+  try {
+    const collectionId = req.params.collectionId;
+    const { name, description, category_id, image_url, fields } = req.body;
+    const updateCollectionQuery = `
+    UPDATE collections
+    SET name = $1, description = $2, category_id = $3, image_url = $4, fields = $5
+    WHERE id = $6
+  `;
+
+  const updateCollectionValues = [name, description, category_id, image_url, fields, collectionId];
+  await pool.query(updateCollectionQuery, updateCollectionValues);
+
+  res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error updating collection:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
+
 module.exports = router;

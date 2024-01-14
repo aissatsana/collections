@@ -11,7 +11,7 @@ function MyCollections () {
   useEffect(() => {
     const fetchUserCollections = async () => {
       try {
-        const response = await axios.get(`/collection/userCollections`);
+        const response = await axios.get(`/api/collection/userCollections`);
         setUserCollections(response.data.userCollections);
       } catch (error) {
         console.error('Error fetching user collections:', error);
@@ -20,6 +20,10 @@ function MyCollections () {
     fetchUserCollections();
   }, []);
 
+  const updateCollections = (updatedCollections) => {
+    setUserCollections(updatedCollections);
+  };
+
   return (
     <>
       <Link to="/create-collection" className="btn mb-4">
@@ -27,7 +31,11 @@ function MyCollections () {
       </Link>
       <ul>
         {userCollections.map(collection => (
-        <CollectionItem collection={collection}/>
+          <CollectionItem
+          key={collection.id}
+          collection={collection}
+          updateCollections={updateCollections}
+          />
         ))}
       </ul>
     </>

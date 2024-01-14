@@ -83,6 +83,7 @@ function getContentType(fileName) {
 }
 
 
+
 module.exports = {
     createCollection,
     uploadImage,

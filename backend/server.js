@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const collectionRoutes = require('./routes/collection'); 
 const dataRoutes = require('./routes/data');
+const itemsRouter = require('./routes/item');
 const path = require('path');
 const http = require('http');
 const session = require('express-session');
@@ -30,8 +31,8 @@ app.use(bodyParser.json());
 
 app.use('/auth', authRoutes);
 app.use('/data', dataRoutes);  
-app.use('/collection', collectionRoutes);
-
+app.use('/api/collection', collectionRoutes);
+app.use('/api/collection', itemsRouter);
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
