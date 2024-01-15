@@ -11,7 +11,13 @@ function MyCollections () {
   useEffect(() => {
     const fetchUserCollections = async () => {
       try {
-        const response = await axios.get(`/api/collection/userCollections`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/api/collection/userCollections', {
+          headers: {
+            'Authorization': `${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
         setUserCollections(response.data.userCollections);
       } catch (error) {
         console.error('Error fetching user collections:', error);
@@ -30,7 +36,7 @@ function MyCollections () {
         {t('Create collection')}
       </Link>
       <ul>
-        {userCollections.map(collection => (
+        {userCollections && userCollections.map(collection => (
           <CollectionItem
           key={collection.id}
           collection={collection}

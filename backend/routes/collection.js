@@ -3,6 +3,8 @@ const collectionService = require('../services/collectionService');
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const pool = require('../ utils/db');
+const authService = require('../services/authService')
+
 
 const router = express.Router();
 const upload = multer();
@@ -34,12 +36,12 @@ router.post('/create', async (req, res) => {
     try {
       const collectionInfo = req.body; 
       const customFieldsObject = createCustomFieldsObject(collectionInfo.fields);
-
+      const token = req.headers.authorization;
       const createdCollection = await collectionService.createCollection({
             name: collectionInfo.name,
             description: collectionInfo.description,
             image_url: collectionInfo.image,
-            user_id: req.session.user.id,
+            user_id: authService.getUserId(token),
             category_id: collectionInfo.category,
             ...customFieldsObject,
       });
@@ -64,7 +66,9 @@ router.post('/uploadImage', upload.single('image'), async (req, res) => {
 
 router.get('/userCollections', async (req, res) => {
   try {
-    const userId = req.session.user.id;
+    const token = req.headers.authorization;
+    const userId = authService.getUserId(token);
+    console.log(userId);
     const query = `
       SELECT * FROM collections
       WHERE user_id = $1;

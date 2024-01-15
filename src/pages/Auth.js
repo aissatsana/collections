@@ -51,7 +51,7 @@ function Auth () {
           return;
         }
         const userData = await response.json();
-        console.log(successMessage, userData);
+        localStorage.setItem('token', userData.token);
         setAuthStatus(true);
         navigate('/profile');
     };

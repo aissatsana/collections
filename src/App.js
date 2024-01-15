@@ -20,6 +20,8 @@ function App() {
     setThemeClass(theme);
   }, [theme]);
 
+  // localStorage.clear()
+
   return (
     <I18nextProvider i18n={i18n}>
         <Router>
