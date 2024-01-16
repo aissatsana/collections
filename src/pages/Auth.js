@@ -51,8 +51,8 @@ function Auth () {
           return;
         }
         const userData = await response.json();
-        localStorage.setItem('token', userData.token);
-        setAuthStatus(true);
+        localStorage.setItem('authData', JSON.stringify(userData));
+        setAuthStatus(true, userData.userId);
         navigate('/profile');
     };
     

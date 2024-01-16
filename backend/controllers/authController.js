@@ -12,7 +12,7 @@ const register =  async (req, res) => {
       const user = result.rows[0];
       const token = authService.generateToken(user);
       authService.saveTokenToDatabase(user.id, token);
-      res.json({ token });
+      res.json({ userId: user.id, token });
     } catch (error) {
       if (error.code === '23505' && error.constraint === 'unique_email') {
         return res.status(400).json({ error: 'User with this email already exists' });
@@ -37,7 +37,7 @@ const login =  async (req, res) => {
 
       const token = authService.generateToken(user);
       authService.saveTokenToDatabase(user.id, token);
-      res.json({ token });
+      res.json({ userId: user.id, token });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -51,7 +51,6 @@ const isAuthenticated = (req, res) => {
 const logout = async (req, res) => {
   try {
     const token = req.headers.authorization;
-    console.log(token);
     const userId = authService.getUserId(token); 
     const deleteQuery = 'DELETE FROM tokens WHERE user_id = $1 AND token = $2';
     await pool.query(deleteQuery, [userId, token]);

@@ -12,7 +12,8 @@ const Header = () => {
     const { isAuthenticated, setAuthStatus } = useAuth();
     const logout = async (e) => {
         try {
-            const token = localStorage.getItem('token');
+            const authData = JSON.parse(localStorage.getItem('authData'));
+            const { userId, token } = authData;    
             const response = await axios.post('/auth/logout', {}, {
               headers: {
                 'Authorization': `${token}`,
@@ -20,7 +21,7 @@ const Header = () => {
               },
             });
             if (response.status === 200) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('authData');
                 setAuthStatus(false);
             }
         } catch (error) {

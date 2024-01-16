@@ -3,17 +3,18 @@ import { createContext, useContext, useState } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const storedAuthStatus = localStorage.getItem('isAuthenticated');
-    return storedAuthStatus ? JSON.parse(storedAuthStatus) : false;
+  const [authData, setAuthData] = useState(() => {
+    const storedAuthData = localStorage.getItem('authData');
+    return storedAuthData ? JSON.parse(storedAuthData) : { isAuthenticated: false, userId: null };
   });
-  // const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const setAuthStatus = (status) => {
-    setIsAuthenticated(status);
-    localStorage.setItem('isAuthenticated', JSON.stringify(status));
+
+  const setAuthStatus = (status,  userId = null) => {
+    const newAuthData = { isAuthenticated: status, userId };
+    setAuthData(newAuthData);
+    localStorage.setItem('authData', JSON.stringify(newAuthData));
   };
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setAuthStatus }}>
+    <AuthContext.Provider value={{ ...authData, setAuthStatus }}>
       {children}
     </AuthContext.Provider>
   );

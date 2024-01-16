@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { Container, Row, Col, Image, Button, ListGroup } from 'react-bootstrap';
 
 const Collection = () => {
   const { collectionId } = useParams();
   const [collection, setCollection] = useState(null);
   const [items, setItems] = useState([]);
+  const { isAuthenticated, userId } = useAuth();
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -35,6 +37,9 @@ const Collection = () => {
     return <p>Loading...</p>;
   }
 
+
+  const isOwner = isAuthenticated && userId === collection.user_id;
+  console.log(`isOwner: ${isOwner}, isAuthenticated: ${isAuthenticated}, userId: ${userId}, colluserid: ${collection.user_id} `);
   return (
     <Container>
       <Row>
@@ -44,7 +49,9 @@ const Collection = () => {
         <Col md={6}>
           <h2>{collection.name}</h2>
           <p>{collection.description}</p>
-          <Button variant="primary" className="btn">Edit Collection</Button>
+          {isOwner && (
+            <Button variant="primary" className="btn">Edit Collection</Button>
+          )}
         </Col>
       </Row>
       
@@ -55,21 +62,27 @@ const Collection = () => {
             {items.length > 0 ? (
             items.map((item) => (
               <ListGroup.Item key={item.id}>
-                {item.name} - {item.description}
-                <Link to={`/collections/${collectionId}/items/${item.id}/edit`} className="btn ml-2">
-                  Edit
-                </Link>
-                <Button variant="danger" className="btn ml-2">
-                  Delete
+                {item.name}
+                {isOwner && (
+                <>
+                  <Link to={`/collections/${collectionId}/items/${item.id}/edit`} className="btn ml-2">
+                    Edit
+                  </Link>
+                  <Button variant="danger" className="btn ml-2">
+                    Delete
                 </Button>
+                  </>
+                )}
               </ListGroup.Item>
             ))) : (    
               <ListGroup.Item>Пока здесь ничего нет</ListGroup.Item>
             )}
           </ListGroup>
-          <Link to={`/collection/${collectionId}/create-item`} state={{ collection }} className="btn mt-2">
-            Add New Item
-          </Link>
+          {isOwner && (
+            <Link to={`/collection/${collectionId}/create-item`} state={{ collection }} className="btn mt-2">
+              Add New Item
+            </Link>
+          )}
         </Col>
       </Row>
     </Container>
