@@ -4,7 +4,7 @@ const itemController = require('../controllers/itemController');
 
 router.get('/:collectionId/items', itemController.getItems);
 router.get('/:collectionId/items/:itemId', itemController.getItemById);
-router.put('/:collectionId/items/:itemId', itemController.editItem);
+router.post('/:collectionId/item/:itemId/update', itemController.editItem);
 router.delete('/:collectionId/items/:itemId', itemController.deleteItem);
 router.post('/:collectionId/items', itemController.createItem);
 

@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button } from "react-bootstrap";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 
 const CreateItem = () => {
+  const { t } = useTranslation();
   const [itemName, setItemName] = useState('');
   const [tags, setTags] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const { collectionId, itemId } = useParams(); 
   const collection = location.state?.collection || {};
   const [fieldValues, setFieldValues] = useState({});
-
   const handleChange = (fieldName, value, fieldType) => {
     setFieldValues((prevFieldValues) => ({
       ...prevFieldValues,
@@ -19,22 +21,45 @@ const CreateItem = () => {
     }));
   };
 
+  useEffect(() => {
+    if (itemId) {
+      const fetchItemData = async () => {
+        try {
+          const response = await axios.get(`/api/collection/${collectionId}/items/${itemId}`);
+          const itemData = response.data.item;
+          const fieldsData = response.data.fields;
+          setItemName(itemData.name);
+          fieldsData.forEach(el => {
+            handleChange(el.field_name, el.field_value, el.field_type)
+          });
+        } catch (error) {
+          console.error('Error fetching item data:', error);
+        }
+      };
+      fetchItemData();
+    }
+  }, [collectionId, itemId]);
+
 
   const handleCreateItem = async () => {
+    let apiUrl = `/api/collection/${collection.id}/items`;
+    if (itemId) {
+      apiUrl = `/api/collection/${collection.id}/item/${itemId}/update`;
+    }
     try {
-      console.log(itemName);
-      console.log(fieldValues);
-      const response = await axios.post(`/api/collection/${collection.id}/items`, {
+      const response = await axios.post(apiUrl, {
         name: itemName,
         tags,
         fieldValues,
       });
-      console.log(response.data); 
-      navigate(`/collection/${collection.id}`);
+      if (response.status === 200) {
+        navigate(`/collection/${collection.id}`);
+      }
     } catch (error) {
       console.error('Error creating item:', error);
     }
   };
+
   const renderField = (fieldName, fieldType) => {
     switch (fieldType) {
       case 'string':
@@ -46,6 +71,7 @@ const CreateItem = () => {
             <Form.Control
               type={fieldType === 'integer' ? 'number' : 'text'}
               placeholder={`Enter ${fieldName}`}
+              value={fieldValues[fieldName]?.value || ''}
               onChange={(e) => handleChange(fieldName, e.target.value, fieldType)}
             />
           </Form.Group>
@@ -56,6 +82,7 @@ const CreateItem = () => {
             <Form.Label>{fieldName}</Form.Label>
             <Form.Control
               type="date"
+              value={fieldValues[fieldName]?.value || ''}
               onChange={(e) => handleChange(fieldName, e.target.value, fieldType)}
             />
           </Form.Group>
@@ -66,6 +93,7 @@ const CreateItem = () => {
             <Form.Check
               type="checkbox"
               label={fieldName}
+              value={fieldValues[fieldName]?.value || false}
               onChange={(e) => handleChange(fieldName, e.target.checked, fieldType)}
             />
           </Form.Group>
@@ -103,12 +131,13 @@ const CreateItem = () => {
           if (field.startsWith('custom_') && collection[field] && field.endsWith('state')) {
             const fieldType = field.split('_')[1].slice(0,-1);
             const fieldName = collection[field.slice(0,-5)+'name'];
-            return renderField(fieldName, fieldType);
+            return renderField(fieldName, fieldType, fieldValues);
           }
           return null;
         })}
+
         <Button variant="primary" onClick={handleCreateItem}>
-          Create Item
+          {itemId ? t('Update item'): t('Create Item')} 
         </Button>
       </Form>
     </Container>

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const pool = require('../ utils/db');
+const pool = require('../utils/db');
 const authService = require('../services/authService');
 
 const register =  async (req, res) => {

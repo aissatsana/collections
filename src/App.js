@@ -20,8 +20,6 @@ function App() {
     setThemeClass(theme);
   }, [theme]);
 
-  // localStorage.clear()
-
   return (
     <I18nextProvider i18n={i18n}>
         <Router>
@@ -35,6 +33,7 @@ function App() {
             <Route path="/create-collection/:collectionId" element={<CreateCollection />} />
             <Route path="/collection/:collectionId" element={<Collection />} />
             <Route path="/collection/:collectionId/create-item" element={<CreateItem />} />
+            <Route path="/collection/:collectionId/edit/:itemId" element={<CreateItem />} />
           </Routes>
         </div>
       </Router>

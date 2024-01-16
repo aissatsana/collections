@@ -28,8 +28,32 @@ function CreateCollection() {
         try {
           const response = await fetch(`/api/collection/${collectionId}`);
           const data = await response.json();
-          console.log(data.collection);
-          setCollectionInfo(data.collection);
+          let updatedCollectionInfo = {};
+          updatedCollectionInfo.name = data.collection.name;
+          updatedCollectionInfo.description = data.collection.description;
+          updatedCollectionInfo.fields = {
+            string: ['','',''],
+            int: ['', '', ''],
+            text: ['', '', ''],
+            boolean: ['', '', ''],
+            date: ['', '', ''],
+          };
+          for (let el in data.collection) {
+            if (el.startsWith('custom') && el.endsWith('name') && data.collection.el !== '') {
+              const field = el.split('_')[1];
+              const fieldType = field.slice(0, -1);
+              const index = parseInt(field.slice(-1)) - 1;
+              console.log(data.collection);
+              console.log(el);
+              console.log(data.collection.el);
+              updatedCollectionInfo.fields[fieldType][index] = data.collection[el];
+              }
+          }
+          console.log(updatedCollectionInfo);
+          setCollectionInfo((prevInfo) => ({
+            ...prevInfo,
+            ...updatedCollectionInfo,
+          }));
         } catch (error) {
           console.error('Error fetching collection:', error);
         }
@@ -152,11 +176,11 @@ function CreateCollection() {
           </Form.Group>
         </div>
 
-        {/* {renderFieldSelector('string', 'String fields')}
+        {renderFieldSelector('string', 'String fields')}
         {renderFieldSelector('int', 'Number fields')}
         {renderFieldSelector('text', 'Text fields')}
         {renderFieldSelector('boolean', `Yes/No fields`)}
-        {renderFieldSelector('date', 'Date fields')} */}
+        {renderFieldSelector('date', 'Date fields')}
         <Button variant="primary" type="submit">
           {collectionId ? t("Update Collection") : t('Create collection')}
         </Button>

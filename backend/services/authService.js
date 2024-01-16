@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../ utils/db')
+const pool = require('../utils/db')
 
 const secretKey = 'key';
 const getUserId = (token) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../ utils/db');
+const pool = require('../utils/db');
 
 router.get('/categories', async (req, res) => {
   try {

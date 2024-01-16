@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-import { Container, Row, Col, Image, Button, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Image, Button } from 'react-bootstrap';
+import ItemsTable from '../components/ItemsTable';
 
 const Collection = () => {
   const { collectionId } = useParams();
@@ -37,9 +38,12 @@ const Collection = () => {
     return <p>Loading...</p>;
   }
 
+  const updateItems = (updatedItems) => {
+    setItems(updatedItems);
+  };
+  
 
   const isOwner = isAuthenticated && userId === collection.user_id;
-  console.log(`isOwner: ${isOwner}, isAuthenticated: ${isAuthenticated}, userId: ${userId}, colluserid: ${collection.user_id} `);
   return (
     <Container>
       <Row>
@@ -54,37 +58,7 @@ const Collection = () => {
           )}
         </Col>
       </Row>
-      
-      <Row className="mt-4">
-        <Col>
-          <h3>Items</h3>
-          <ListGroup>
-            {items.length > 0 ? (
-            items.map((item) => (
-              <ListGroup.Item key={item.id}>
-                {item.name}
-                {isOwner && (
-                <>
-                  <Link to={`/collections/${collectionId}/items/${item.id}/edit`} className="btn ml-2">
-                    Edit
-                  </Link>
-                  <Button variant="danger" className="btn ml-2">
-                    Delete
-                </Button>
-                  </>
-                )}
-              </ListGroup.Item>
-            ))) : (    
-              <ListGroup.Item>Пока здесь ничего нет</ListGroup.Item>
-            )}
-          </ListGroup>
-          {isOwner && (
-            <Link to={`/collection/${collectionId}/create-item`} state={{ collection }} className="btn mt-2">
-              Add New Item
-            </Link>
-          )}
-        </Col>
-      </Row>
+      <ItemsTable items={items} isOwner={isOwner} updateItems={updateItems} collection={collection} collectionId={collectionId} />
     </Container>
   );
 };
