@@ -36,7 +36,7 @@ function CollectionItem ({ collection, updateCollections }) {
         </h3>
         <p>{collection.description}</p>
       </div>
-      <div className="d-flex flex-column ms-auto me-4">
+      <div className="d-flex flex-column ms-auto">
         <Link to={`/collection/edit/${collection.id}`} className="btn btn-primary mb-2">
             {t('Edit')}
         </Link>

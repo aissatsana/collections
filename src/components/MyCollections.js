@@ -5,6 +5,7 @@ import axios from "axios";
 import CollectionItem from "./CollectionItem";
 import CollectionFilter from "./CollectionFilter";
 import { DropdownButton, Dropdown } from "react-bootstrap";
+import SortDropdown from "./SortDropdown";
 
 function MyCollections () {
   const { t } = useTranslation();
@@ -79,7 +80,7 @@ function MyCollections () {
       <div className="d-flex justify-content-between">
         <h2>{t('Your collections')}:</h2>
         <div className="d-flex">
-          <DropdownButton className="me-4" id="sort-collection" title={`Sort by ${sortMethod}`} onSelect={onSelect}>
+          {/* <DropdownButton className="me-4" id="sort-collection" title={`Sort by ${sortMethod}`} onSelect={onSelect}>
             <Dropdown.Item key="name" eventKey='name'>
               {t('By name')}
             </Dropdown.Item>
@@ -89,14 +90,18 @@ function MyCollections () {
             <Dropdown.Item key="update-date" eventKey="update-date">
               {t('By updated date')}
             </Dropdown.Item>
-          </DropdownButton>
+          </DropdownButton> */}
+          <SortDropdown onSelect={onSelect} sortMethod={sortMethod}/>
           <Link to="/collection/create" className="btn mb-4">
             {t('Create collection')}
           </Link>
         </div>
       </div>
       <div className="d-flex justify-content-space-between">
-        <div className="col-md-9">
+        <div className="col-md-2">
+            <CollectionFilter onApplyFilter={onApplyFilter}/>
+        </div>
+        <div className="col-md-10 ms-4">
           {userCollections && userCollections.map(collection => (
             <CollectionItem
             key={collection.id}
@@ -104,9 +109,6 @@ function MyCollections () {
             updateCollections={updateCollections}
             />
           ))}
-        </div>
-        <div className="col-md-3">
-            <CollectionFilter onApplyFilter={onApplyFilter}/>
         </div>
       </div>
     </>
