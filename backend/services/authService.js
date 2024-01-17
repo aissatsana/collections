@@ -8,7 +8,11 @@ const getUserId = (token) => {
         return null; 
       }
       const decodedToken = jwt.verify(token, secretKey);
-      return decodedToken.id;
+      if (!decodedToken || !decodedToken.userId) {
+        console.error('Invalid token structure');
+        return null;
+      }
+      return decodedToken.userId;
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;
@@ -16,13 +20,12 @@ const getUserId = (token) => {
 };
 
 const generateToken = (user) => {
-    const payload = { id: user.id};
+    const payload = { userId: user.id};
     const options = { expiresIn: '7d' };
     return jwt.sign(payload, secretKey, options);
 };
 
-const isAuthenticated = async (req, res, next) => {
-    const token = req.headers.authorization;
+const isAuthenticated = async (token) => {
     if (!token) {
         return false;
     }

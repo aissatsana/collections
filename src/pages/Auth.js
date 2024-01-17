@@ -51,7 +51,8 @@ function Auth () {
           return;
         }
         const userData = await response.json();
-        localStorage.setItem('authData', JSON.stringify(userData));
+        console.log(userData);
+        localStorage.setItem('token', JSON.stringify(userData.token));
         setAuthStatus(true, userData.userId);
         navigate('/profile');
     };
@@ -73,7 +74,7 @@ function Auth () {
           setError('Failed to complete registration, contact support')
         }
     };
-
+    
     const handleToggleMode = () => {
         setIsRegistration(!isRegistration);
         setEmail('');

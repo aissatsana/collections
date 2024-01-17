@@ -12,8 +12,7 @@ const Header = () => {
     const { isAuthenticated, setAuthStatus } = useAuth();
     const logout = async (e) => {
         try {
-            const authData = JSON.parse(localStorage.getItem('authData'));
-            const { userId, token } = authData;    
+            const token = JSON.parse(localStorage.getItem('token'));
             const response = await axios.post('/auth/logout', {}, {
               headers: {
                 'Authorization': `${token}`,

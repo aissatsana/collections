@@ -11,7 +11,7 @@ function MyCollections () {
   useEffect(() => {
     const fetchUserCollections = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = JSON.parse(localStorage.getItem('token'));
         const response = await axios.get('/api/collection/userCollections', {
           headers: {
             'Authorization': `${token}`,

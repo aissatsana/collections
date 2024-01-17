@@ -45,13 +45,16 @@ const login =  async (req, res) => {
 };
 
 const isAuthenticated = (req, res) => {
-    return authService.isAuthenticated();
+    const token = req.headers.authorization;
+    return authService.isAuthenticated(token);
 };
 
 const logout = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const userId = authService.getUserId(token); 
+    console.log(token);
+    console.log(userId);
     const deleteQuery = 'DELETE FROM tokens WHERE user_id = $1 AND token = $2';
     await pool.query(deleteQuery, [userId, token]);
     res.status(200).json({ success: true, message: 'Logout successful' });
