@@ -42,6 +42,18 @@
     "Profile": "Профиль",
     "Log out": "Выйти",
     "Create Item": "Добавить айтем",
-    "Update Item": "Обновить айтем"
+    "Update Item": "Обновить айтем",
+    "By name": "По названию",
+    "By created date": "По дате создания",
+    "By updated date": "По дате обновления",
+    "Filters": "Фильтры",
+    "Apply filter": "Применить фильтры",
+    "Sort": "Сортировка",
+    "Has image": "Есть изображение",
+    "Has items": "Есть айтемы",
+    "Has custom fields": "Есть дополнительные поля",
+    "Your collections": "Ваши коллекции",
+    "Collections": "Коллекции",
+    "Reset": "Сбросить"
 }
   

@@ -59,7 +59,7 @@ const ItemsTable = ({ items, isOwner, updateItems, collection, collectionId }) =
           <p>Пока здесь ничего нет</p>
         )}
         {isOwner && (
-          <Link to={`/collection/${collectionId}/create-item`} state={{collection}}  className="btn mt-2">
+          <Link to={`/collection/${collectionId}/item`} state={{collection}}  className="btn mt-2">
             Add New Item
           </Link>
         )}

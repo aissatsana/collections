@@ -21,7 +21,7 @@ function CollectionItem ({ collection, updateCollections }) {
       }
     };
     return (
-    <div className="d-flex align-items-center">
+    <div className="d-flex align-items-center mb-4 me-2">
       <img
         src={collection.image_url}
         alt={collection.name}
@@ -36,12 +36,14 @@ function CollectionItem ({ collection, updateCollections }) {
         </h3>
         <p>{collection.description}</p>
       </div>
-      <Link to={`/create-collection/${collection.id}`} className="btn btn-primary ms-auto">
-          {t('Edit')}
-      </Link>
-      <Button className="btn btn-primary ms-2" onClick={handleDelete}>
-          {t('Delete')}
-      </Button>
+      <div className="d-flex flex-column ms-auto me-4">
+        <Link to={`/collection/edit/${collection.id}`} className="btn btn-primary mb-2">
+            {t('Edit')}
+        </Link>
+        <Button className="btn btn-primary" onClick={handleDelete}>
+            {t('Delete')}
+        </Button>
+      </div>
     </div>
 )};
 

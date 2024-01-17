@@ -11,7 +11,7 @@ function CreateCollection() {
   const [collectionInfo, setCollectionInfo] = useState({
     name: '',
     description: '',
-    category: null,
+    category_id: null,
     image: null,
     fields: {
       string: ['','',''],
@@ -66,7 +66,7 @@ function CreateCollection() {
     const { name, value } = e.target;
     setCollectionInfo((prevInfo) => ({
       ...prevInfo,
-      [name]: name === 'category' ? Number(value) : value,
+      [name]: name === 'category_id' ? Number(value) : value,
     }));
   };
 
@@ -105,16 +105,20 @@ function CreateCollection() {
 
       const updatedCollectionInfo = {
         ...collectionInfo,
-        image: imageUrl,
+        image_url: imageUrl,
       };
+      console.log(updatedCollectionInfo);
       
       let apiUrl = '/api/collection/create';
       if (collectionId) {
         apiUrl = `/api/collection/update/${collectionId}`;
       }
+
+      const token = JSON.parse(localStorage.getItem('token'));
       const createCollectionResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
+          'Authorization': `${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedCollectionInfo),
@@ -162,9 +166,9 @@ function CreateCollection() {
           <Form.Control as="textarea" rows={3} name="description" value={collectionInfo.description} onChange={handleInputChange} required />
         </Form.Group>
         <div className="d-flex my-4">
-          <Form.Group controlId="category" className="d-flex align-items-end">
+          <Form.Group controlId="category_id" className="d-flex align-items-end">
             <Form.Label className="me-2">{t('Category')}:</Form.Label>
-            <CategorySelector currentCategory={collectionInfo.category} onSelect={(selectedCategory) => handleInputChange({ target: { name: 'category', value: selectedCategory }})} />
+            <CategorySelector currentCategory={collectionInfo.category_id} onSelect={(selectedCategory) => handleInputChange({ target: { name: 'category_id', value: selectedCategory }})} />
           </Form.Group>
 
           <Form.Group controlId="image" className="d-flex align-items-end">

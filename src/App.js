@@ -29,10 +29,10 @@ function App() {
             <Route path="/" element={<Main />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/create-collection" element={<CreateCollection />} />
-            <Route path="/create-collection/:collectionId" element={<CreateCollection />} />
+            <Route path="/collection/create" element={<CreateCollection />} />
+            <Route path="/collection/edit/:collectionId" element={<CreateCollection />} />
             <Route path="/collection/:collectionId" element={<Collection />} />
-            <Route path="/collection/:collectionId/create-item" element={<CreateItem />} />
+            <Route path="/collection/:collectionId/item" element={<CreateItem />} />
             <Route path="/collection/:collectionId/edit/:itemId" element={<CreateItem />} />
           </Routes>
         </div>

@@ -38,7 +38,7 @@ const Header = () => {
             <ThemeSwitcher />
             {isAuthenticated ? (
                 <>
-                   <Link to="/profile" className="btn">
+                   <Link to="/profile" className="btn me-2">
                         {t('Profile')}
                     </Link>
                     <Button onClick={logout} className="btn">

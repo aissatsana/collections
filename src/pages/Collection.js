@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-import { Container, Row, Col, Image, Button } from 'react-bootstrap';
+import { Container, Row, Col, Image } from 'react-bootstrap';
 import ItemsTable from '../components/ItemsTable';
+import { useTranslation } from 'react-i18next';
 
 const Collection = () => {
+  const { t } = useTranslation();
   const { collectionId } = useParams();
   const [collection, setCollection] = useState(null);
   const [items, setItems] = useState([]);
@@ -54,7 +56,9 @@ const Collection = () => {
           <h2>{collection.name}</h2>
           <p>{collection.description}</p>
           {isOwner && (
-            <Button variant="primary" className="btn">Edit Collection</Button>
+            <Link to={`/collection/edit/${collection.id}`} className="btn btn-primary ms-auto">
+              {t('Edit')}
+            </Link>
           )}
         </Col>
       </Row>

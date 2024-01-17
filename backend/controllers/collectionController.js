@@ -32,8 +32,8 @@ exports.getUserCollections = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const userId = authService.getUserId(token);
-    const userCollections = await collectionService.getUserCollections(userId);
-    res.status(200).json({ userCollections });
+    const collections = await collectionService.getUserCollections(userId);
+    res.status(200).json({ collections });
   } catch (error) {
     console.error('Error fetching user collections:', error);
     res.status(500).json({ error: 'Internal Server Error' });

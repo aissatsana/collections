@@ -11,6 +11,7 @@ const CategorySelector = ({ onSelect, currentCategory }) => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('/data/categories');
+        console.log(response.data);
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching themes:', error);
