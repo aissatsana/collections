@@ -25,7 +25,7 @@ const CreateItem = () => {
     if (itemId) {
       const fetchItemData = async () => {
         try {
-          const response = await axios.get(`/api/collection/${collectionId}/items/${itemId}`);
+          const response = await axios.get(`/api/collection/items/${itemId}`);
           const itemData = response.data.item;
           const fieldsData = response.data.fields;
           setItemName(itemData.name);

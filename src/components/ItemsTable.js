@@ -9,7 +9,7 @@ const ItemsTable = ({ items, isOwner, updateItems, collection, collectionId }) =
   const { t } = useTranslation();
   const handleDelete = async (itemId) => {
         try {
-          const response = await fetch(`/api/collection/${collectionId}/items/${itemId}`, {
+          const response = await fetch(`/api/items/${itemId}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -64,7 +64,11 @@ const ItemsTable = ({ items, isOwner, updateItems, collection, collectionId }) =
             <tbody>
               {items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.name}</td>
+                  <td>
+                    <Link to={`/item/${item.id}`}>
+                      {item.name}
+                    </Link>
+                  </td>
                   {isOwner && (
                     <td>
                       <Link to={`/collection/${collectionId}/edit/${item.id}`} state={{collection}} className="btn btn-secondary">

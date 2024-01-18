@@ -1,4 +1,5 @@
 const pool = require('../utils/db');
+const authService = require('../services/authService');
 
 exports.getItems = async (req, res) => {
   try {
@@ -16,12 +17,26 @@ exports.getItems = async (req, res) => {
 
 exports.getItemById = async (req, res) => {
   try {
+    const token = req.headers.authorization;
+    const userId = authService.getUserId(token);
     const itemId = req.params.itemId;
     let result = await pool.query(`SELECT * FROM items where id = $1`, [itemId]);
     const item = result.rows[0];
     result = await pool.query(`SELECT * FROM items_custom_fields where item_id = $1`, [itemId]);
     const fields = result.rows;
-    res.status(200).json({item, fields});
+    result = await pool.query(`
+    SELECT COUNT(*) AS like_count, EXISTS (
+      SELECT 1 FROM likes WHERE item_id = $1 AND user_id = $2
+    ) AS user_liked
+    FROM likes
+    WHERE item_id = $1
+  `, [itemId, userId]);
+    const likes = result.rows[0];
+    result = await pool.query(`
+    SELECT * FROM comments WHERE item_id = $1
+  `, [itemId]);
+    const comments = result.rows;
+    res.status(200).json({item, fields, likes, comments});
   } catch (error) {
     console.error('Error getting item:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });

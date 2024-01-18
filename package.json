@@ -27,6 +27,7 @@
     "react-i18next": "^14.0.0",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
+    "socket.io": "^4.7.4",
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4"
   },

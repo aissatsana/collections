@@ -11,6 +11,7 @@ import i18n from './contexts/i18n';
 import CreateCollection from './pages/Create-collection';
 import Collection from './pages/Collection'
 import CreateItem from './pages/CreateItem';
+import Item from './pages/Item';
 
 function App() {
   const { theme } = useTheme();
@@ -34,6 +35,7 @@ function App() {
             <Route path="/collection/:collectionId" element={<Collection />} />
             <Route path="/collection/:collectionId/item" element={<CreateItem />} />
             <Route path="/collection/:collectionId/edit/:itemId" element={<CreateItem />} />
+            <Route path="/item/:itemId" element={<Item />} />
           </Routes>
         </div>
       </Router>

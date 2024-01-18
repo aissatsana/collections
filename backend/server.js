@@ -4,6 +4,8 @@ const authRoutes = require('./routes/auth');
 const collectionRoutes = require('./routes/collection'); 
 const dataRoutes = require('./routes/data');
 const itemsRouter = require('./routes/item');
+const likesRouter = require('./routes/likes')
+const commentsRouter = require('./routes/comments');
 const path = require('path');
 const http = require('http');
 
@@ -19,7 +21,9 @@ app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/data', dataRoutes);  
 app.use('/api/collection', collectionRoutes);
-app.use('/api/collection', itemsRouter);
+app.use('/api/items', itemsRouter);
+app.use('/api/likes', likesRouter);
+app.use('/api/comments', commentsRouter);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));

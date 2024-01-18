@@ -25,7 +25,7 @@ const Collection = () => {
 
     const fetchItems = async () => {
       try {
-        const response = await axios.get(`/api/collection/${collectionId}/items`);
+        const response = await axios.get(`/api/items/${collectionId}/items`);
         setItems(response.data.items);
       } catch (error) {
         console.error('Error fetching items:', error);
