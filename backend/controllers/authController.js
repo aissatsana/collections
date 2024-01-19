@@ -12,7 +12,7 @@ const register =  async (req, res) => {
       const user = result.rows[0];
       const token = authService.generateToken(user);
       authService.saveTokenToDatabase(user.id, token);
-      res.json({ userId: user.id, token });
+      res.json({ userId: user.id, token, username: user.username });
     } catch (error) {
       if (error.code === '23505' && error.constraint === 'unique_email') {
         return res.status(400).json({ error: 'User with this email already exists' });
@@ -37,7 +37,7 @@ const login =  async (req, res) => {
 
       const token = authService.generateToken(user);
       authService.saveTokenToDatabase(user.id, token);
-      res.json({ userId: user.id, token });
+      res.json({ userId: user.id, token, username: user.username });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Internal Server Error' });

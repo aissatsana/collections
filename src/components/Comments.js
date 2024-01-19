@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Form } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import io from "socket.io-client";
 import axios from "axios";
+import { formatDate } from './helpers'; 
+import { useAuth } from "../contexts/AuthContext";
 
 const Comments = ({ comments, setComments, itemId, userId }) => {
   const { t } = useTranslation();
   const [newComment, setNewComment] = useState('');
   const [socket, setSocket] = useState(null);
+  const { username } = useAuth();
 
   useEffect(() => {
     const socket = io(process.env.REACT_APP_SOCKET_SERVER); 
@@ -40,6 +43,7 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
         item_id: itemId,
         content: newComment, 
         user_id: userId, 
+        username: username,
         created_at: new Date().toISOString()
       }
       if (socket) {
@@ -56,11 +60,13 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
       <div className="mt-4">
         <h3>{t('Comments')}</h3>
         {comments.map((comment) => (
-            <div key={comment.id} className="mb-3">
-            <p>{comment.content}</p>
-            <p>{t('Posted by')}: {comment.user_id}</p>
-            <p>{t('Created at')}: {comment.created_at}</p>
+          <Card key={comment.id} className="mb-3" style={{borderRadius: '10px', padding: '15px'}}>
+            <div className="d-flex justify-content-between">
+              <Card.Title>{comment.username}</Card.Title>
+              <Card.Subtitle>{formatDate(comment.created_at)}</Card.Subtitle>
             </div>
+            <Card.Text>{comment.content}</Card.Text>
+          </Card>
         ))}
       </div>
       <div className="mt-4">
@@ -75,7 +81,7 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
             />
           </Form.Group>
           <Button variant="primary" type="button" onClick={handleAddComment}>
-            {t('Add Comment')}
+            {t('Add comment')}
           </Button>
         </Form>
       </div>
