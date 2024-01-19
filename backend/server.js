@@ -8,6 +8,7 @@ const likesRouter = require('./routes/likes')
 const commentsRouter = require('./routes/comments');
 const path = require('path');
 const http = require('http');
+const socketIO = require('socket.io');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -15,6 +16,7 @@ const port = process.env.PORT || 3001;
 app.use(express.static(path.join(__dirname, '../build')));
 
 const server = http.createServer(app);
+const io = socketIO(server);
 
 app.use(bodyParser.json());
 
@@ -28,6 +30,20 @@ app.use('/api/comments', commentsRouter);
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  
+  socket.on('joinItemRoom', (itemId) => {
+    socket.join(`item_${itemId}`);
+  });
+  
+  socket.on('newComment', (comment) => {
+    console.log('updating comment');
+    io.to(`item_${comment.item_id}`).emit('updateComments', comment);
+  });
+});
+
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -32,9 +32,7 @@ exports.getItemById = async (req, res) => {
     WHERE item_id = $1
   `, [itemId, userId]);
     const likes = result.rows[0];
-    result = await pool.query(`
-    SELECT * FROM comments WHERE item_id = $1
-  `, [itemId]);
+    result = await pool.query(`SELECT * FROM comments WHERE item_id = $1`, [itemId]);
     const comments = result.rows;
     res.status(200).json({item, fields, likes, comments});
   } catch (error) {
