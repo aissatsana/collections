@@ -1,5 +1,5 @@
 import { Container, Tab, Tabs } from 'react-bootstrap';
-import MyCollections from '../components/MyCollections';
+import UserCollections from '../components/UserCollections';
 import { useTranslation } from 'react-i18next';
 
 
@@ -10,7 +10,7 @@ function Profile () {
                 <h1>Inner page</h1>
                 <Tabs defaultActiveKey="collections" id="profile-menu" className="mb-3">
                     <Tab eventKey="collections" title={t('Collections')}>
-                        <MyCollections />
+                        <UserCollections />
                     </Tab>
                     <Tab eventKey="profile" title={t('Profile')}>
                         Tab content for Profile

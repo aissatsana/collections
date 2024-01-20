@@ -4,13 +4,12 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import CollectionItem from "./CollectionItem";
 import CollectionFilter from "./CollectionFilter";
-import { DropdownButton, Dropdown } from "react-bootstrap";
 import SortDropdown from "./SortDropdown";
 
-function MyCollections () {
+function UserCollections () {
   const { t } = useTranslation();
   const [userCollections, setUserCollections] = useState([]);
-  const [originalCollections, seOriginalCollections] = useState([]);
+  const [originalCollections, setOriginalCollections] = useState([]);
   const [sortMethod, setSortMethod] = useState('name'); 
 
   useEffect(() => {
@@ -23,7 +22,7 @@ function MyCollections () {
             'Content-Type': 'application/json',
           },
         });
-        seOriginalCollections(response.data.collections);
+        setOriginalCollections(response.data.collections);
         setUserCollections(sortCollections(response.data.collections));
       } catch (error) {
         console.error('Error fetching user collections:', error);
@@ -52,7 +51,6 @@ function MyCollections () {
   };
 
   const onApplyFilter = (filterOptions) => {
-    console.log("Applying filter with options:", filterOptions);
     const filteredCollections = filterCollections(originalCollections, filterOptions);
     updateCollections(filteredCollections);
   };
@@ -80,17 +78,6 @@ function MyCollections () {
       <div className="d-flex justify-content-between">
         <h2>{t('Your collections')}:</h2>
         <div className="d-flex">
-          {/* <DropdownButton className="me-4" id="sort-collection" title={`Sort by ${sortMethod}`} onSelect={onSelect}>
-            <Dropdown.Item key="name" eventKey='name'>
-              {t('By name')}
-            </Dropdown.Item>
-            <Dropdown.Item key="create-date" eventKey="create-date">
-              {t('By created date')}
-            </Dropdown.Item>
-            <Dropdown.Item key="update-date" eventKey="update-date">
-              {t('By updated date')}
-            </Dropdown.Item>
-          </DropdownButton> */}
           <SortDropdown onSelect={onSelect} sortMethod={sortMethod}/>
           <Link to="/collection/create" className="btn mb-4">
             {t('Create collection')}
@@ -115,4 +102,4 @@ function MyCollections () {
   )
 }
 
-export default MyCollections
+export default UserCollections

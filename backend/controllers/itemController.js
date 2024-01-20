@@ -4,15 +4,25 @@ const authService = require('../services/authService');
 exports.getItems = async (req, res) => {
   try {
     const collectionId = req.params.collectionId;
-    const query = `SELECT * FROM items where collection_id = $1`;
+    const query = `
+      SELECT
+        items.*,
+        CASE WHEN EXISTS (SELECT 1 FROM comments WHERE item_id = items.id) THEN true ELSE false END AS has_comments,
+        COALESCE((SELECT COUNT(*) FROM likes WHERE item_id = items.id), 0) AS count_likes
+      FROM
+        items
+      WHERE
+        collection_id = $1;
+    `;
     const result = await pool.query(query, [collectionId]);
     const items = result.rows;
-    res.status(200).json({items});
+    res.status(200).json({ items });
   } catch (error) {
     console.error('Error getting items:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
 
 
 exports.getItemById = async (req, res) => {
