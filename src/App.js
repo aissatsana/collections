@@ -12,6 +12,7 @@ import CreateCollection from './pages/Create-collection';
 import Collection from './pages/Collection'
 import CreateItem from './pages/CreateItem';
 import Item from './pages/Item';
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   const { theme } = useTheme();
@@ -36,6 +37,7 @@ function App() {
             <Route path="/collection/:collectionId/item" element={<CreateItem />} />
             <Route path="/collection/:collectionId/edit/:itemId" element={<CreateItem />} />
             <Route path="/item/:itemId" element={<Item />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </div>
       </Router>
