@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",
+    "@prisma/client": "^5.8.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -29,6 +30,7 @@
     "react-i18next": "^14.0.0",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
     "socket.io": "^4.7.4",
     "socket.io-client": "^4.7.4",
     "uuid": "^9.0.1",

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const Collection = () => {
   const { t } = useTranslation();
-  const { collectionId } = useParams();
+  let { collectionId } = useParams();
   const [collection, setCollection] = useState(null);
   const [originalItems, setOriginalItems] = useState([]);
   const { isAuthenticated, userId } = useAuth();
@@ -46,7 +46,9 @@ const Collection = () => {
     <Container>
       <Row>
         <Col md={6}>
+          {collection.image_url && 
           <Image src={collection.image_url} alt={collection.name} fluid width={300} height={300}/>
+          }
         </Col>
         <Col md={6}>
           <h2>{collection.name}</h2>

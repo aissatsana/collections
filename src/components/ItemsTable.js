@@ -39,15 +39,15 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
   };
   const onSelectSort = (eventKey) => {
     setSortMethod(eventKey);
-    //updateItems((prevCollections) => sortItems(prevCollections, eventKey));
   };
   const sortItems = (items, method) => {
+    console.log(items);
     const sortFunctions = {
       name: (a, b) => a.name.localeCompare(b.name),
       'create-date': (a, b) => new Date(a.created_at) - new Date(b.created_at),
-      'update-date': (a, b) => new Date(a.updated_at) - new Date(b.updated_at),
+      'update-date': (a, b) => new Date(b.updated_at) - new Date(a.updated_at),
     };
-    return items.sort(sortFunctions[method]);
+    return [...items].sort(sortFunctions[method]);
   };
 
   const onApplyFilter = (filterOptions) => {

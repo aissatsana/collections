@@ -1,6 +1,9 @@
-const pool = require('../utils/db');
+//const pool = require('../utils/db');
 //const { storage, bucket } = require('../utils/storage');  
 const { Storage } = require('@google-cloud/storage');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 
 const storage = new Storage({
   projectId: 'my-collection-410422',
@@ -32,28 +35,23 @@ const createCustomFieldsObject = (fields) => {
 };
 
 const createCollection = async (collectionInfo, userId) => {
+  console.log(collectionInfo);
   try {
     const customFieldsObject = createCustomFieldsObject(collectionInfo.fields);
-    const currentDate = new Date();
-    const query = `
-      INSERT INTO collections (name, description, image_url, user_id, category_id, created_at, updated_at, ${Object.keys(customFieldsObject).join(', ')})
-      VALUES ($1, $2, $3, $4, $5, $6, $7, ${Object.values(customFieldsObject).map((_, i) => `$${i + 8}`).join(', ')})
-      RETURNING *;
-    `;
+    const createdCollection = await prisma.collections.create({
+      data: {
+        name: collectionInfo.name,
+        description: collectionInfo.description,
+        image_url: collectionInfo.image_url,        
+        category_id: collectionInfo.category_id,
+        user_id: parseInt(userId, 10),
+        created_at: new Date(),
+        updated_at: new Date(),
+        ...customFieldsObject,
+      },
+    });
 
-    const values = [
-      collectionInfo.name,
-      collectionInfo.description,
-      collectionInfo.image_url,
-      userId,
-      collectionInfo.category_id,
-      currentDate,
-      currentDate,
-      ...Object.values(customFieldsObject),
-    ];
-
-    const result = await pool.query(query, values);
-    return result.rows[0];
+    return createdCollection;
   } catch (error) {
     throw error;
   }
@@ -98,12 +96,11 @@ function getContentType(fileName) {
 
 const getUserCollections = async (userId) => {
   try {
-    const query = `
-      SELECT * FROM collections
-      WHERE user_id = $1;
-    `;
-    const result = await pool.query(query, [userId]);
-    const userCollections = result.rows;
+    const userCollections = await prisma.collections.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
     for (const collection of userCollections) {
       if (collection.image_url) {
         const imageUrl =  await getImageUrl(collection.image_url);
@@ -132,12 +129,11 @@ async function getImageUrl(fileName) {
 
 const getCollectionById = async (collectionId) => {
   try {
-    const query = `
-      SELECT * FROM collections
-      WHERE id = $1;
-    `;
-    const result = await pool.query(query, [collectionId]);
-    const collection = result.rows[0];
+    const collection = prisma.collections.findUnique({
+      where: {
+        id: parseInt(collectionId,10)
+      }
+    })
     if (collection.image_url) {
       const imageUrl = await getImageUrl(collection.image_url);
       collection.image_url = imageUrl;
@@ -150,8 +146,9 @@ const getCollectionById = async (collectionId) => {
 
 const deleteCollection = async (collectionId) => {
   try {
-    const query = `DELETE FROM collections WHERE id = $1`;
-    await pool.query(query, [collectionId]);
+    prisma.collections.delete({
+      where: {id: collectionId}
+    })
   } catch (error) {
     throw error;
   }
@@ -160,24 +157,19 @@ const deleteCollection = async (collectionId) => {
 const updateCollection = async (collectionId, name, description, category_id, image_url, fields) => {
   try {
     const customFieldsObject = createCustomFieldsObject(fields);
-    const currentDate = new Date();
-    const updateCollectionQuery = `
-      UPDATE collections
-      SET name = $1, description = $2, category_id = $3, image_url = $4, updated_at = $5, ${Object.keys(customFieldsObject).map((field, i) => `${field} = $${i + 5}`).join(', ')}
-      WHERE id = $7;
-    `;
-
-    const values = [
-      name,
-      description,
-      category_id,
-      image_url,
-      currentDate,
-      ...Object.values(customFieldsObject),
-      collectionId,
-    ];
-
-    await pool.query(updateCollectionQuery, values);
+    await prisma.collections.update({
+      where: {
+        id: collectionId,
+      },
+      data: {
+        name,
+        description,
+        category_id,
+        image_url,
+        updated_at: new Date(),
+        ...customFieldsObject,
+      },
+    });
   } catch (error) {
     throw error;
   }

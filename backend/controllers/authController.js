@@ -1,15 +1,20 @@
 const bcrypt = require('bcrypt');
-const pool = require('../utils/db');
+const { PrismaClient } = require('@prisma/client');
 const authService = require('../services/authService');
+
+const prisma = new PrismaClient();
 
 const register =  async (req, res) => {
     const { username, email, password } = req.body;
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const client = await pool.connect();
-      const result = await client.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [username, email, hashedPassword]);
-      client.end();
-      const user = result.rows[0];
+      const user = await prisma.users.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+        },
+      });
       const token = authService.generateToken(user);
       authService.saveTokenToDatabase(user.id, token);
       res.json({ userId: user.id, token, username: user.username });
@@ -24,11 +29,12 @@ const register =  async (req, res) => {
 const login =  async (req, res) => {
     const { email, password } = req.body;
     try {
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (result.rows.length === 0) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+        const user = await prisma.users.findUnique({
+          where: { email },
+        });
+        if (!user) {
+          return res.status(401).json({ error: 'Invalid email or password' });
         }
-        const user = result.rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
@@ -53,10 +59,9 @@ const logout = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const userId = authService.getUserId(token); 
-    console.log(token);
-    console.log(userId);
-    const deleteQuery = 'DELETE FROM tokens WHERE user_id = $1 AND token = $2';
-    await pool.query(deleteQuery, [userId, token]);
+    await prisma.tokens.deleteMany({
+      where: { user_id: userId, token },
+    });
     res.status(200).json({ success: true, message: 'Logout successful' });
   } catch (error) {
     console.error('Error logout:', error);

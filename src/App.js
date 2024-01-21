@@ -8,7 +8,7 @@ import { useState, React, useEffect } from 'react';
 import './App.css';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './contexts/i18n';
-import CreateCollection from './pages/Create-collection';
+import CreateCollection from './pages/CreateCollection';
 import Collection from './pages/Collection'
 import CreateItem from './pages/CreateItem';
 import Item from './pages/Item';

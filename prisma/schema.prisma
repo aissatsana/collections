@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  collections collections[]
+}
+
+model tags {
+  id    Int        @id @default(autoincrement())
+  name  String     @unique @db.VarChar(255)
+  items itemtags[] @relation("TagToItems")
+}
+
+model collections {
+  id                    Int        @id @default(autoincrement())
+  name                  String     @db.VarChar(255)
+  description           String
+  image_url             String?    @db.VarChar(255)
+  user_id               Int
+  category_id           Int
+  custom_string1_state  Boolean?
+  custom_string1_name   String?    @db.VarChar(255)
+  custom_string2_state  Boolean?
+  custom_string2_name   String?    @db.VarChar(255)
+  custom_string3_state  Boolean?
+  custom_string3_name   String?    @db.VarChar(255)
+  custom_int1_state     Boolean?
+  custom_int1_name      String?    @db.VarChar(255)
+  custom_int2_state     Boolean?
+  custom_int2_name      String?    @db.VarChar(255)
+  custom_int3_state     Boolean?
+  custom_int3_name      String?    @db.VarChar(255)
+  custom_text1_state    Boolean?
+  custom_text1_name     String?    @db.VarChar(255)
+  custom_text2_state    Boolean?
+  custom_text2_name     String?    @db.VarChar(255)
+  custom_text3_state    Boolean?
+  custom_text3_name     String?    @db.VarChar(255)
+  custom_boolean1_state Boolean?
+  custom_boolean1_name  String?    @db.VarChar(255)
+  custom_boolean2_state Boolean?
+  custom_boolean2_name  String?    @db.VarChar(255)
+  custom_boolean3_state Boolean?
+  custom_boolean3_name  String?    @db.VarChar(255)
+  custom_date1_state    Boolean?
+  custom_date1_name     String?    @db.VarChar(255)
+  custom_date2_state    Boolean?
+  custom_date2_name     String?    @db.VarChar(255)
+  custom_date3_state    Boolean?
+  custom_date3_name     String?    @db.VarChar(255)
+  created_at            DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime?  @default(now()) @db.Timestamptz(6)
+  hasitems              Boolean?   @default(false)
+  categories            categories @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_id")
+  users                 users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_id")
+  items                 items[]
+}
+
+model comments {
+  id         Int       @id @default(autoincrement())
+  item_id    Int
+  user_id    Int
+  content    String    @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  items      items     @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model items {
+  id                  Int                   @id @default(autoincrement())
+  name                String                @db.VarChar(255)
+  collection_id       Int
+  created_at          DateTime?             @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?             @default(now()) @db.Timestamptz(6)
+  comments            comments[]
+  collections         collections           @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_collection_id")
+  items_custom_fields items_custom_fields[]
+  tags                itemtags[]            @relation("ItemToTags")
+  likes               likes[]
+}
+
+model items_custom_fields {
+  id          Int    @id @default(autoincrement())
+  item_id     Int
+  field_type  String @db.VarChar(255)
+  field_name  String @db.VarChar(255)
+  field_value String
+  items       items  @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_item_id")
+
+  @@unique([item_id, field_name], map: "unique_item_field")
+}
+
+model itemtags {
+  item_id Int
+  tag_id  Int
+  item    items @relation("ItemToTags", fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tag     tags  @relation("TagToItems", fields: [tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([item_id, tag_id])
+}
+
+model likes {
+  id      Int   @id @default(autoincrement())
+  item_id Int
+  user_id Int
+  items   items @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model tokens {
+  id      Int    @id @default(autoincrement())
+  user_id Int
+  token   String @unique
+  users   users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id          Int           @id @default(autoincrement())
+  username    String?       @db.VarChar(255)
+  email       String?       @unique(map: "unique_email") @db.VarChar(255)
+  password    String?       @db.VarChar(255)
+  status      String?       @default("active") @db.VarChar(255)
+  role        String?       @default("user") @db.VarChar(255)
+  collections collections[]
+  comments    comments[]
+  likes       likes[]
+  tokens      tokens[]
+}

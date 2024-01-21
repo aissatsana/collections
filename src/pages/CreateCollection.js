@@ -31,6 +31,7 @@ function CreateCollection() {
           let updatedCollectionInfo = {};
           updatedCollectionInfo.name = data.collection.name;
           updatedCollectionInfo.description = data.collection.description;
+          updatedCollectionInfo.category_id = data.collection.category_id;
           updatedCollectionInfo.fields = {
             string: ['','',''],
             int: ['', '', ''],
@@ -43,13 +44,9 @@ function CreateCollection() {
               const field = el.split('_')[1];
               const fieldType = field.slice(0, -1);
               const index = parseInt(field.slice(-1)) - 1;
-              console.log(data.collection);
-              console.log(el);
-              console.log(data.collection.el);
               updatedCollectionInfo.fields[fieldType][index] = data.collection[el];
               }
           }
-          console.log(updatedCollectionInfo);
           setCollectionInfo((prevInfo) => ({
             ...prevInfo,
             ...updatedCollectionInfo,

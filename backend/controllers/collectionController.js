@@ -1,6 +1,7 @@
 const collectionService = require('../services/collectionService');
 const authService = require('../services/authService');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
+
 
 
 exports.createCollection = async (req, res) => {
@@ -64,9 +65,9 @@ exports.deleteCollection = async (req, res) => {
 
 exports.updateCollection =  async (req, res) => {
   try {
-    const collectionId = req.params.collectionId;
+    const collectionId = parseInt(req.params.collectionId, 10);
     const { name, description, category_id, image_url, fields } = req.body;
-    await collectionService.updateCollection(collectionId, name, description, category_id, image_url);
+    await collectionService.updateCollection(collectionId, name, description, category_id, image_url, fields);
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error updating collection:', error);

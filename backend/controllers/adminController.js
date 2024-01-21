@@ -1,12 +1,19 @@
-const pool = require('../utils/db');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 const updateUserField = async (userIds, field, value) => {
     try {
-      const result = await pool.query(`
-        UPDATE users
-        SET ${field} = $1
-        WHERE id = ANY($2)
-      `, [value, userIds]);
-      return result;
+      await prisma.users.updateMany({
+        where: {
+          id: {
+            in: userIds,
+          },
+        },
+        data: {
+          [field]: value,
+        },
+      });
+      return { success: true, message: 'Success' };
     } catch (error) {
       console.error(`Error updating ${field} for users:`, error);
       throw error;
@@ -15,8 +22,7 @@ const updateUserField = async (userIds, field, value) => {
   
 exports.getUsers = async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM users`);
-    const users = result.rows;
+    const users = await prisma.users.findMany();
     res.status(200).json({ users });
   } catch (error) {
     console.error('Error getting users:', error);
@@ -67,12 +73,16 @@ exports.getUsers = async (req, res) => {
   exports.deleteUsers = async (req, res) => {
     try {
         const userIds = req.body.userIds;
-        await pool.query(`
-        DELETE FROM users
-        WHERE id = ANY($1)
-      `, [userIds]);
+        await prisma.users.deleteMany({
+          where: {
+            id: {
+              in: userIds,
+            },
+          },
+        });
         res.status(200).json({ message: 'Success' });
       } catch (error) {
+        console.error('Error deleting users:', error); 
         res.status(500).json({ success: false, message: 'Internal Server Error' });
       }
   }

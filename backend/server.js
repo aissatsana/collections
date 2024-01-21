@@ -27,7 +27,6 @@ app.use('/api/collection', collectionRoutes);
 app.use('/api/items', itemsRouter);
 app.use('/api/likes', likesRouter);
 app.use('/api/comments', commentsRouter);
-app.use('/api/comments', commentsRouter);
 app.use('/api/admin', adminRouter);
 
 app.get('*', (req, res) => {
@@ -35,14 +34,12 @@ app.get('*', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Client connected');
   
   socket.on('joinItemRoom', (itemId) => {
     socket.join(`item_${itemId}`);
   });
   
   socket.on('newComment', (comment) => {
-    console.log('updating comment');
     io.to(`item_${comment.item_id}`).emit('updateComments', comment);
   });
 });

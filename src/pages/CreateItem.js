@@ -8,24 +8,39 @@ import { useTranslation } from 'react-i18next';
 const CreateItem = () => {
   const { t } = useTranslation();
   const [itemName, setItemName] = useState('');
-  const [tags, setTags] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { collectionId, itemId } = useParams(); 
   const collection = location.state?.collection || {};
   const [fieldValues, setFieldValues] = useState({});
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const handleChange = (fieldName, value, fieldType) => {
     setFieldValues((prevFieldValues) => ({
       ...prevFieldValues,
       [fieldName]: {value: value, name: fieldName, type: fieldType},
     }));
   };
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await axios.get('/api/items/tags'); 
+        setTags(response.data.tags);
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+      }
+    };
+    fetchTags();
+  }, []); 
+  const handleTagChange = (selectedOptions) => {
+    setSelectedTags(selectedOptions);
+  };
 
   useEffect(() => {
     if (itemId) {
       const fetchItemData = async () => {
         try {
-          const response = await axios.get(`/api/collection/items/${itemId}`);
+          const response = await axios.get(`/api/items/${itemId}`);
           const itemData = response.data.item;
           const fieldsData = response.data.fields;
           setItemName(itemData.name);
@@ -42,9 +57,9 @@ const CreateItem = () => {
 
 
   const handleCreateItem = async () => {
-    let apiUrl = `/api/collection/${collection.id}/items`;
+    let apiUrl = `/api/items/${collection.id}/items`;
     if (itemId) {
-      apiUrl = `/api/collection/${collection.id}/item/${itemId}/update`;
+      apiUrl = `/api/items/${collection.id}/item/${itemId}/update`;
     }
     try {
       const response = await axios.post(apiUrl, {
@@ -116,16 +131,11 @@ const CreateItem = () => {
             onChange={(e) => setItemName(e.target.value)}
           />
         </Form.Group>
+       
+        {/* tags */}
 
-        <Form.Group controlId="tags">
-          <Form.Label>Tags</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter tags (comma-separated)"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-        </Form.Group>
+
+
 
         {Object.keys(collection).map((field) => {
           if (field.startsWith('custom_') && collection[field] && field.endsWith('state')) {
@@ -136,7 +146,7 @@ const CreateItem = () => {
           return null;
         })}
 
-        <Button variant="primary" onClick={handleCreateItem}>
+        <Button variant="primary" className="mt-2" onClick={handleCreateItem}>
           {itemId ? t('Update item'): t('Create Item')} 
         </Button>
       </Form>

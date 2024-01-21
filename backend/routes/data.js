@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../utils/db');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 router.get('/categories', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name FROM categories');
-    const categories = result.rows;
+    const categories = await prisma.categories.findMany({
+      select: { id: true, name: true },
+    });
     res.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);

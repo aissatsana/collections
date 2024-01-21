@@ -30,8 +30,8 @@ const Item = () => {
             setItem(response.data.item);
             setFields(response.data.fields);
             console.log(response.data.likes);
-            setLikes(parseInt(response.data.likes.like_count));
-            setIsLiked(response.data.likes.user_liked);
+            setLikes(parseInt(response.data.likes.count));
+            setIsLiked(response.data.likes.isUserLiked);
             setComments(response.data.comments);
           } catch (error) {
             console.error('Error fetching user collections:', error);

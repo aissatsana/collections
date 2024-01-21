@@ -1,14 +1,21 @@
-const pool = require('../utils/db');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const authService = require('../services/authService');
 
 exports.manageComments = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const userId = authService.getUserId(token);
-    const itemId = req.params.itemId;
-    const currentDate = new Date();
+    const itemId = parseInt(req.params.itemId,10);
     const { content } = req.body;
-    const result = pool.query('INSERT INTO comments (item_id, user_id, content, created_at) VALUES ($1, $2, $3, $4)', [itemId, userId, content, currentDate]);
+    await prisma.comments.create({
+      data: {
+        item_id: itemId,
+        user_id: userId,
+        content,
+        created_at: new Date(),
+      },
+    });
     res.status(200).json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
     console.error('Error adding likes:', error);

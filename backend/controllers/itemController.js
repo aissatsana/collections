@@ -1,21 +1,23 @@
-const pool = require('../utils/db');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const authService = require('../services/authService');
 
 exports.getItems = async (req, res) => {
   try {
     const collectionId = req.params.collectionId;
-    const query = `
-      SELECT
-        items.*,
-        CASE WHEN EXISTS (SELECT 1 FROM comments WHERE item_id = items.id) THEN true ELSE false END AS has_comments,
-        COALESCE((SELECT COUNT(*) FROM likes WHERE item_id = items.id), 0) AS count_likes
-      FROM
-        items
-      WHERE
-        collection_id = $1;
-    `;
-    const result = await pool.query(query, [collectionId]);
-    const items = result.rows;
+    const items = await prisma.items.findMany({
+      where: {
+        collection_id: parseInt(collectionId,10),
+      },
+      include: {
+        _count: {
+          select: { likes: true },
+        },
+        comments: {
+          select: { id: true },
+        },
+      },
+    });
     res.status(200).json({ items });
   } catch (error) {
     console.error('Error getting items:', error);
@@ -29,27 +31,55 @@ exports.getItemById = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const userId = authService.getUserId(token);
-    const itemId = req.params.itemId;
-    let result = await pool.query(`SELECT * FROM items where id = $1`, [itemId]);
-    const item = result.rows[0];
-    result = await pool.query(`SELECT * FROM items_custom_fields where item_id = $1`, [itemId]);
-    const fields = result.rows;
-    result = await pool.query(`
-    SELECT COUNT(*) AS like_count, EXISTS (
-      SELECT 1 FROM likes WHERE item_id = $1 AND user_id = $2
-    ) AS user_liked
-    FROM likes
-    WHERE item_id = $1
-  `, [itemId, userId]);
-    const likes = result.rows[0];
-    result = await pool.query(`SELECT comments.*, users.username
-    FROM comments
-    LEFT JOIN users ON comments.user_id = users.id
-    WHERE comments.item_id = $1;
-    `, [itemId]);
-    const comments = result.rows;
-    console.log(comments);
-    res.status(200).json({item, fields, likes, comments});
+    const itemId = parseInt(req.params.itemId, 10);
+    const item = await prisma.items.findUnique({
+      where: {
+        id: itemId,
+      },
+    });
+    const fields = await prisma.items_custom_fields.findMany({
+      where: {
+        item_id: itemId,
+      },
+    });
+    if (userId) {
+    const likesCount = await prisma.likes.count({
+      where: {
+        item_id: itemId,
+      },
+    });
+    const isUserLiked = await prisma.likes.findFirst({
+      where: {
+        item_id: itemId,
+        user_id: userId,
+      },
+    });
+    const likes = {
+      count: likesCount,
+      isUserLiked: !!isUserLiked
+    }
+    const comments = await prisma.comments.findMany({
+      where: {
+        item_id: itemId,
+      },
+      include: {
+        users: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+    const formatedComments = comments.map(comment => {
+      const { users, ...rest } = comment;  
+      return {
+        ...rest, 
+        username: comment.users.username,
+      };
+    });
+    res.status(200).json({item, fields, likes, comments: formatedComments});
+  }
+  res.status(200).json({item, fields});
   } catch (error) {
     console.error('Error getting item:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -59,24 +89,38 @@ exports.getItemById = async (req, res) => {
 
 exports.editItem = async (req, res) => {
   try {
-    const itemId = req.params.itemId;
+    const itemId = parseInt(req.params.itemId, 10);
     const { name, fieldValues, tags } = req.body;
-    const updateItemQuery = `
-      UPDATE items
-      SET name = $1
-      WHERE id = $2;
-    `;
-    await pool.query(updateItemQuery, [name, itemId]);
+    await prisma.items.update({
+      where: {
+        id: itemId,
+      },
+      data: {
+        name,
+        updated_at: new Date(),
+      },
+    });
 
-    const customFieldsQuery = `
-      INSERT INTO items_custom_fields (item_id, field_type, field_name, field_value)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (item_id, field_name) DO UPDATE
-      SET field_type = EXCLUDED.field_type, field_value = EXCLUDED.field_value;
-    `;
     const customFieldsPromises = Object.entries(fieldValues).map(([fieldName, fieldInfo]) => {
       const { type, name, value } = fieldInfo;
-      return pool.query(customFieldsQuery, [itemId, type, name, value]);
+      return prisma.items_custom_fields.upsert({
+        where: {
+          item_id_field_name: {
+            item_id: itemId,
+            field_name: fieldName,
+          },
+        },
+        update: {
+          field_type: type,
+          field_value: value,
+        },
+        create: {
+          item_id: itemId,
+          field_type: type,
+          field_name: fieldName,
+          field_value: value,
+        },
+      });
     });
     await Promise.all(customFieldsPromises);
 
@@ -90,9 +134,12 @@ exports.editItem = async (req, res) => {
 
 exports.deleteItem = async (req, res) => {
   try {
-    const itemId = req.params.itemId;
-    const query = `DELETE FROM items WHERE id = $1`;
-    const result = await pool.query(query, [itemId]);
+    const itemId = parseInt(req.params.itemId, 10);
+    await prisma.items.delete({
+      where: {
+        id: itemId,
+      },
+    });
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error deleting items:', error);
@@ -102,28 +149,44 @@ exports.deleteItem = async (req, res) => {
 
 exports.createItem = async (req, res) => {
   try {
-    const collectionId = req.params.collectionId;
+    const collectionId = parseInt(req.params.collectionId, 10);
     const {name, fieldValues, tags} = req.body;
-
-    const itemQuery = `
-    INSERT INTO items (name, collection_id)
-    VALUES ($1, $2)
-    RETURNING id;
-  `;
-  const itemResult = await pool.query(itemQuery, [name, collectionId]);
-  const itemId = itemResult.rows[0].id;
-  const customFieldsQuery = `
-  INSERT INTO items_custom_fields (item_id, field_type, field_name, field_value)
-  VALUES ($1, $2, $3, $4);
-  `;
-  const customFieldsPromises = Object.entries(fieldValues).map(([fieldName, fieldInfo]) => {
-  const { type, name, value } = fieldInfo;
-  return pool.query(customFieldsQuery, [itemId, type, name, value]);
-  });
-await Promise.all(customFieldsPromises);
-res.status(200).json({ success: true, message: 'Item created successfully' });
+    console.log(name, collectionId);
+    const createdItem = await prisma.items.create({
+      data: {
+        name,    
+        collection_id: collectionId 
+      },
+    });
+    const itemId = createdItem.id;
+    const customFieldsPromises = Object.entries(fieldValues).map(([fieldName, fieldInfo]) => {
+      const { type, name, value } = fieldInfo;
+      const fieldValue = value !== undefined ? value.toString() : null;
+      return prisma.items_custom_fields.create({
+        data: {
+          item_id: itemId,
+          field_type: type,
+          field_name: name,
+          field_value: fieldValue,
+        },
+      });
+    });
+    await Promise.all(customFieldsPromises);
+    res.status(200).json({ success: true, message: 'Item created successfully' });
   } catch (error) {
     console.error('Error creating item:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
+exports.getTags = async (req, res) => {
+  try {
+    const tags = await prisma.tags.findMany();
+    res.status(200).json({ tags });
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
