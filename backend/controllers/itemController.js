@@ -32,11 +32,25 @@ exports.getItemById = async (req, res) => {
     const token = req.headers.authorization;
     const userId = authService.getUserId(token);
     const itemId = parseInt(req.params.itemId, 10);
+   
+    const tagsData = await prisma.itemtags.findMany({
+      where: {
+        item_id: itemId,
+      },
+      include: {
+        tag: true,
+      },
+    });
+    
+    const tags = tagsData.map((tagData) => tagData.tag.name);
+    
     const item = await prisma.items.findUnique({
       where: {
         id: itemId,
       },
     });
+    
+    const updatedItem = { ...item, tags };
     const fields = await prisma.items_custom_fields.findMany({
       where: {
         item_id: itemId,
@@ -77,9 +91,9 @@ exports.getItemById = async (req, res) => {
         username: comment.users.username,
       };
     });
-    res.status(200).json({item, fields, likes, comments: formatedComments});
+    return res.status(200).json({item: updatedItem, fields, likes, comments: formatedComments});
   }
-  res.status(200).json({item, fields});
+  res.status(200).json({item: updatedItem, fields});
   } catch (error) {
     console.error('Error getting item:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -122,8 +136,48 @@ exports.editItem = async (req, res) => {
         },
       });
     });
-    await Promise.all(customFieldsPromises);
 
+    await prisma.itemtags.deleteMany({
+      where: {
+        item_id: itemId,
+      },
+    });
+
+    
+    const tagPromises = tags.map(async (tagName) => {
+      const existingTag = await prisma.tags.findUnique({
+        where: { name: tagName },
+      });
+
+      if (!existingTag) {
+        return prisma.tags.create({
+          data: {
+            name: tagName,
+          },
+        });
+      }
+
+      return existingTag;
+    });
+
+    const createdTags = await Promise.all(tagPromises);
+    const itemTagsPromises = createdTags.map(async (tag) => {
+      return prisma.itemtags.upsert({
+        where: {
+          item_id_tag_id: {
+            item_id: itemId,
+            tag_id: tag.id,
+          },
+        },
+        update: {},
+        create: {
+          item_id: itemId,
+          tag_id: tag.id,
+        },
+      });
+    });
+
+    await Promise.all([...customFieldsPromises, ...itemTagsPromises]);
     res.status(200).json({ success: true, message: 'Item updated successfully' });
   } catch (error) {
     console.error('Error updating item:', error);
@@ -151,7 +205,6 @@ exports.createItem = async (req, res) => {
   try {
     const collectionId = parseInt(req.params.collectionId, 10);
     const {name, fieldValues, tags} = req.body;
-    console.log(name, collectionId);
     const createdItem = await prisma.items.create({
       data: {
         name,    
@@ -159,6 +212,32 @@ exports.createItem = async (req, res) => {
       },
     });
     const itemId = createdItem.id;
+    const tagPromises = tags.map(async (tagName) => {
+      const existingTag = await prisma.tags.findUnique({
+        where: { name: tagName },
+      });
+
+      if (!existingTag) {
+        return prisma.tags.create({
+          data: {
+            name: tagName,
+          },
+        });
+      }
+
+      return existingTag;
+    });
+    const createdTags = await Promise.all(tagPromises);
+    const itemTagsPromises = createdTags.map(async (tag) => {
+      return prisma.itemtags.create({
+        data: {
+          item_id: itemId,
+          tag_id: tag.id,
+        },
+      });
+    });
+
+    await Promise.all(itemTagsPromises);
     const customFieldsPromises = Object.entries(fieldValues).map(([fieldName, fieldInfo]) => {
       const { type, name, value } = fieldInfo;
       const fieldValue = value !== undefined ? value.toString() : null;

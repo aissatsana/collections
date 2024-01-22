@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Container, Row, Col} from "react-bootstrap";
-import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import Likes from '../components/Likes';
 import Comments from '../components/Comments';
 
 const Item = () => {
-    const { t } = useTranslation();
     const { itemId } = useParams();
     const [item, setItem] = useState({});
     const [fields, setFields] = useState([]);
@@ -28,8 +26,8 @@ const Item = () => {
               },
             });
             setItem(response.data.item);
+            console.log(response.data.item);
             setFields(response.data.fields);
-            console.log(response.data.likes);
             setLikes(parseInt(response.data.likes.count));
             setIsLiked(response.data.likes.isUserLiked);
             setComments(response.data.comments);
@@ -55,24 +53,23 @@ const Item = () => {
           console.error('Error liking item:', error);
         }
     };
+    
+    // const handleCommentsChange = () => {
 
-    // const handleAddComment = async (comment) => {
-    //     try {
-    //         const token = JSON.parse(localStorage.getItem('token'));
-    //         await axios.post(`/api/comments/${itemId}`, { content: comment.content }, {
-    //             headers: {
-    //                 'Authorization': `${token}`,
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         });
-    //         setComments([...comments, { content: comment.content, user_id: comment.user_id , created_at: comment.created_at }]);
-    //     } catch(error) {
-    //         console.error('Error adding comment:', error);
-    //     }
+    // }
+
+    // const handleLikesChange = () => {
+      
     // }
     return (
         <Container>
           <h1>{item.name}</h1>
+          <Row>
+            {item.tags && item.tags.map((tag) => (
+              <span>{tag}</span>
+            ))}
+          </Row>
+
           <Row>
             {fields.map((field) => (
                 <Col key={field.field_name} md={6} className="mb-4">

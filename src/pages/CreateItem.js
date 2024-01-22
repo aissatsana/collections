@@ -3,37 +3,28 @@ import { Container, Form, Button } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import TagsInput from '../components/TagsInput';
 
 
 const CreateItem = () => {
   const { t } = useTranslation();
-  const [itemName, setItemName] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { collectionId, itemId } = useParams(); 
   const collection = location.state?.collection || {};
-  const [fieldValues, setFieldValues] = useState({});
-  const [tags, setTags] = useState([]);
+  const [itemName, setItemName] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
+  const [fieldValues, setFieldValues] = useState({});
   const handleChange = (fieldName, value, fieldType) => {
     setFieldValues((prevFieldValues) => ({
       ...prevFieldValues,
       [fieldName]: {value: value, name: fieldName, type: fieldType},
     }));
   };
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await axios.get('/api/items/tags'); 
-        setTags(response.data.tags);
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-      }
-    };
-    fetchTags();
-  }, []); 
-  const handleTagChange = (selectedOptions) => {
-    setSelectedTags(selectedOptions);
+
+
+  const handleTagsChange = (newTags) => {
+    setSelectedTags(newTags);
   };
 
   useEffect(() => {
@@ -43,6 +34,7 @@ const CreateItem = () => {
           const response = await axios.get(`/api/items/${itemId}`);
           const itemData = response.data.item;
           const fieldsData = response.data.fields;
+          setSelectedTags(itemData.tags);
           setItemName(itemData.name);
           fieldsData.forEach(el => {
             handleChange(el.field_name, el.field_value, el.field_type)
@@ -64,7 +56,7 @@ const CreateItem = () => {
     try {
       const response = await axios.post(apiUrl, {
         name: itemName,
-        tags,
+        tags: selectedTags,
         fieldValues,
       });
       if (response.status === 200) {
@@ -132,8 +124,8 @@ const CreateItem = () => {
           />
         </Form.Group>
        
-        {/* tags */}
 
+        <TagsInput onTagsChange={handleTagsChange} selectedTags={selectedTags}/>
 
 
 
