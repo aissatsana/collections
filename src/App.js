@@ -15,6 +15,7 @@ import Item from './pages/Item';
 import AdminPanel from './pages/AdminPanel';
 
 function App() {
+  localStorage.clear();
   const { theme } = useTheme();
   const [themeClass, setThemeClass] = useState('light');
 
