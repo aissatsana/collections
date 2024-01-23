@@ -75,3 +75,12 @@ exports.updateCollection =  async (req, res) => {
   }
 };
 
+exports.getBiggestCollections = async (req, res) => {
+  try {
+    const topCollections = await collectionService.getBiggestCollections();
+    res.status(200).json({collections: topCollections});
+  } catch (error) {
+    console.error('Error getting collections:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}

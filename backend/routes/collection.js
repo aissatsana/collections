@@ -7,6 +7,7 @@ const upload = multer();
 
 
 router.post('/create', upload.single('image'), collectionController.createCollection);
+router.get('/getTop', collectionController.getBiggestCollections);
 router.post('/uploadImage', upload.single('image'), collectionController.uploadImage);
 router.get('/userCollections', collectionController.getUserCollections);
 router.get('/:collectionId', collectionController.getCollectionById);

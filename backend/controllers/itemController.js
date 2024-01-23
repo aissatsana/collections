@@ -296,7 +296,6 @@ exports.getLastAdded = async (req, res) => {
         },
       },
     });
-    console.log(latestItems);
     res.status(200).json({ latestItems });
     
   } catch (error) {

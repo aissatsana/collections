@@ -174,6 +174,44 @@ const updateCollection = async (collectionId, name, description, category_id, im
     throw error;
   }
 };
+const getBiggestCollections = async () => {
+  try {
+    const topCollections = await prisma.collections.findMany({
+      orderBy: {
+        items: {
+          _count: 'desc',
+        },
+      },
+      take: 5, 
+      select: {
+        id: true,
+        name: true,
+        users: {
+          select: {
+            username: true,
+          },
+        },
+        items: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    console.log(topCollections);
+    const formattedTopCollections = topCollections.map((collection) => ({
+      id: collection.id,
+      name: collection.name,
+      username: collection.users.username,
+      itemCount: collection.items.length,
+    }));
+    
+    console.log(formattedTopCollections);
+    return topCollections;
+  } catch (error) {
+    throw error;
+  }
+}
 
 module.exports = {
   createCollection,
@@ -182,4 +220,5 @@ module.exports = {
   getCollectionById,
   deleteCollection,
   updateCollection,
+  getBiggestCollections,
 };

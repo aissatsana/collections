@@ -20,6 +20,7 @@ const LastAddedItems = () => {
     }, [])
     return (
         <>
+        <h3>{t('5 last added collections')}</h3>
         {items.length > 0 ? (
             <div className='w-100'>
               <Table striped bordered hover responsive>
