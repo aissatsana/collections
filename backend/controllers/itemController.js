@@ -264,6 +264,7 @@ exports.createItem = async (req, res) => {
 exports.getTags = async (req, res) => {
   try {
     const tags = await prisma.tags.findMany();
+    console.log(tags);
     res.status(200).json({ tags });
   } catch (error) {
     console.error('Error fetching tags:', error);

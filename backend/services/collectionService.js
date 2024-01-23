@@ -198,16 +198,13 @@ const getBiggestCollections = async () => {
         },
       },
     });
-    console.log(topCollections);
     const formattedTopCollections = topCollections.map((collection) => ({
       id: collection.id,
       name: collection.name,
       username: collection.users.username,
       itemCount: collection.items.length,
     }));
-    
-    console.log(formattedTopCollections);
-    return topCollections;
+    return formattedTopCollections;
   } catch (error) {
     throw error;
   }
