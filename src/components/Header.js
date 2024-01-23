@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Navbar, Form, FormControl, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ThemeSwitcher from './ThemeSwitcher';
@@ -6,11 +6,11 @@ import LangSwitcher from './LangSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import SearchComponent from './SearchComponent';
 
 const Header = () => {
     const { t } = useTranslation();
     const { isAuthenticated, setAuthStatus } = useAuth();
+    const [expanded, setExpanded] = useState(false);
     const logout = async (e) => {
         try {
             const token = JSON.parse(localStorage.getItem('token'));
@@ -28,16 +28,15 @@ const Header = () => {
             console.error(error);
         }
     }
+    const handleNavbarToggle = () => {
+        setExpanded(!expanded);
+    }
     return (
-      <Navbar>
+      <Navbar expand="lg">
         <Container className="d-flex align-items-center">
             <Navbar.Brand className="mr-4" href="/">My Collection</Navbar.Brand>
-            {/* <Form inline="true">
-                <FormControl type="text" placeholder={`${t('Search')}...`} className="mr-sm-2" />
-            </Form> */}
-            <SearchComponent />
-            <LangSwitcher />
-            <ThemeSwitcher />
+            <Navbar.Toggle aria-controls="navbar" onClick={handleNavbarToggle} />
+            <Navbar.Collapse id="navbar" className={`justify-content-end ${expanded ? 'show' : ''}`}>
             {isAuthenticated ? (
                 <>
                    <Link to="/profile" className="btn me-2">
@@ -52,6 +51,12 @@ const Header = () => {
                     {t('Log in')}
                 </Link>
             )}
+            </Navbar.Collapse>
+            {/* <Form inline="true">
+                <FormControl type="text" placeholder={`${t('Search')}...`} className="mr-sm-2" />
+            </Form> */}
+            <LangSwitcher />
+            <ThemeSwitcher />
         </Container>
       </Navbar>
     );

@@ -5,12 +5,15 @@ import axios from "axios";
 import CollectionItem from "./CollectionItem";
 import CollectionFilter from "./CollectionFilter";
 import SortDropdown from "./SortDropdown";
+import { Button } from "react-bootstrap";
 
 function UserCollections () {
   const { t } = useTranslation();
   const [userCollections, setUserCollections] = useState([]);
   const [originalCollections, setOriginalCollections] = useState([]);
   const [sortMethod, setSortMethod] = useState('name'); 
+  const isMobile = window.innerWidth <= 768;
+  const [showFilters, setShowFilters] = useState(!isMobile);
 
   useEffect(() => {
     const fetchUserCollections = async () => {
@@ -72,23 +75,31 @@ function UserCollections () {
       return field.startsWith('custom') && field.endsWith('name') && collection[field] !== '';
     });
   };
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
 
   return (
     <>
       <div className="d-flex justify-content-between">
-        <h2>{t('Your collections')}:</h2>
+        {/* <h2>{t('Your collections')}:</h2> */}
         <div className="d-flex">
           <SortDropdown onSelect={onSelect} sortMethod={sortMethod}/>
           <Link to="/collection/create" className="btn mb-4">
             {t('Create collection')}
           </Link>
+          {isMobile && (
+            <Button className="btn" onClick={toggleFilters}>
+              {t('Filters')}
+            </Button>
+          )}
         </div>
       </div>
-      <div className="d-flex justify-content-space-between">
-        <div className="col-md-2">
-            <CollectionFilter onApplyFilter={onApplyFilter}/>
+      <div className="d-flex flex-column flex-md-row justify-content-between">
+        <div>
+          {showFilters && <CollectionFilter onApplyFilter={onApplyFilter} />}
         </div>
-        <div className="col-md-10 ms-4">
+        <div className={isMobile ? "w-100 mt-3" : "ms-4 w-100"}>
           {userCollections && userCollections.map(collection => (
             <CollectionItem
             key={collection.id}

@@ -30,7 +30,6 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
   }, [socket, setComments, comments]);
 
   const handleAddComment = async () => {
-    console.log(newComment, itemId, userId);
     try {
       const token = JSON.parse(localStorage.getItem('token'));
       await axios.post(`/api/comments/${itemId}`, { content: newComment }, {

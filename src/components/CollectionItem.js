@@ -21,9 +21,9 @@ function CollectionItem ({ collection, updateCollections }) {
       }
     };
     return (
-    <div className="d-flex align-items-center mb-4 me-2">
+    <div className="d-flex align-items-center mb-4">
       <img
-        src={collection.image_url}
+        src={collection.image_url ?  collection.image_url : 'img/default-collection.webp'}
         alt={collection.name}
         style={{ width: '100px', height: '100px', marginRight: '16px', border: '2px solid black', }}
         className="rounded-circle"

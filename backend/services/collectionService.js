@@ -4,7 +4,6 @@ const { Storage } = require('@google-cloud/storage');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-
 const storage = new Storage({
   projectId: 'my-collection-410422',
   keyFilename: 'keyfile.json',
@@ -35,7 +34,6 @@ const createCustomFieldsObject = (fields) => {
 };
 
 const createCollection = async (collectionInfo, userId) => {
-  console.log(collectionInfo);
   try {
     const customFieldsObject = createCustomFieldsObject(collectionInfo.fields);
     const createdCollection = await prisma.collections.create({
@@ -186,6 +184,7 @@ const getBiggestCollections = async () => {
       select: {
         id: true,
         name: true,
+        image_url: true,
         users: {
           select: {
             username: true,
@@ -198,11 +197,18 @@ const getBiggestCollections = async () => {
         },
       },
     });
+    for (const collection of topCollections) {
+      if (collection.image_url) {
+        const imageUrl =  await getImageUrl(collection.image_url);
+        collection.image_url = imageUrl;
+      }
+    }
     const formattedTopCollections = topCollections.map((collection) => ({
       id: collection.id,
       name: collection.name,
       username: collection.users.username,
       itemCount: collection.items.length,
+      image_url: collection.image_url
     }));
     return formattedTopCollections;
   } catch (error) {

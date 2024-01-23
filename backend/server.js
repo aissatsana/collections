@@ -8,6 +8,7 @@ const likesRouter = require('./routes/likes')
 const commentsRouter = require('./routes/comments');
 const adminRouter = require('./routes/admin');
 const searchRouter = require('./routes/search'); 
+const userRouter = require('./routes/user');
 const path = require('path');
 const http = require('http');
 const socketIO = require('socket.io');
@@ -30,6 +31,7 @@ app.use('/api/items', itemsRouter);
 app.use('/api/likes', likesRouter);
 app.use('/api/comments', commentsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/user', userRouter);
 // app.use('/api/search', searchRouter);
 
 app.get('*', (req, res) => {
