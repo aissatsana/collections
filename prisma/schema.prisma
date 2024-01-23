@@ -78,15 +78,15 @@ model items {
   id                  Int                   @id @default(autoincrement())
   name                String                @db.VarChar(255)
   collection_id       Int
-  user_id             Int
   created_at          DateTime?             @default(now()) @db.Timestamptz(6)
   updated_at          DateTime?             @default(now()) @db.Timestamptz(6)
+  user_id             Int
   comments            comments[]
   collections         collections           @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_collection_id")
+  users               users                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_id")
   items_custom_fields items_custom_fields[]
   tags                itemtags[]            @relation("ItemToTags")
   likes               likes[]
-  users               users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_id")
 }
 
 model items_custom_fields {
@@ -134,7 +134,7 @@ model users {
   isAdmin     Boolean       @default(false)
   collections collections[]
   comments    comments[]
+  items       items[]
   likes       likes[]
   tokens      tokens[]
-  items       items[]
 }
