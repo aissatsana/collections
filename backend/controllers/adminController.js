@@ -53,7 +53,7 @@ exports.getUsers = async (req, res) => {
   exports.makeAdmin = async (req, res) => {
     try {
       const userIds = req.body.userIds;
-      await updateUserField(userIds, 'role', 'admin');
+      await updateUserField(userIds, 'isAdmin', true);
       res.status(200).json({ message: 'Success' });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -63,7 +63,7 @@ exports.getUsers = async (req, res) => {
   exports.revokeAdmin = async (req, res) => {
     try {
       const userIds = req.body.userIds;
-      await updateUserField(userIds, 'role', 'user');
+      await updateUserField(userIds, 'isAdmin', false);
       res.status(200).json({ message: 'Success' });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Internal Server Error' });

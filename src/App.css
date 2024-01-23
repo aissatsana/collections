@@ -32,3 +32,20 @@
 .App {
   min-height: 100vh;
 }
+
+.link {
+  text-decoration: none;
+  color: black;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  .dark {
+    color: white;
+
+    &:hover {
+      color: lightgrey;
+    }
+  }
+}

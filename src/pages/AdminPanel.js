@@ -89,19 +89,19 @@ const AdminPanel = () => {
     <Container className="mt-4">
       <h3>{t('Admin panel')}</h3>
       <div className='d-flex mb-2'>
-          <Button variant="danger" className="me-2" onClick={() => handleDeleteUser()}>
+          <Button variant="light" className="me-2" onClick={() => handleDeleteUser()}>
             {t('Delete')}
           </Button>
-          <Button variant="danger" className="me-2" onClick={() => handleUserStatusChange('block')}>
+          <Button variant="light" className="me-2" onClick={() => handleUserStatusChange('block')}>
             {t('Block')}
           </Button>
-          <Button variant="danger" className="me-2" onClick={() => handleUserStatusChange('unblock')}>
+          <Button variant="light" className="me-2" onClick={() => handleUserStatusChange('unblock')}>
             {t('Unblock')}
           </Button>
-          <Button variant="danger" className="me-2" onClick={() => handleUserRoleChange('make-admin')}>
+          <Button variant="light" className="me-2" onClick={() => handleUserRoleChange('make-admin')}>
             {t('Make admin')}
           </Button>
-          <Button variant="danger" className="me-2" onClick={() => handleUserRoleChange('revoke-admin')}>
+          <Button variant="light" className="me-2" onClick={() => handleUserRoleChange('revoke-admin')}>
             {t('Revoke admin')}
           </Button>
       </div>
@@ -112,7 +112,7 @@ const AdminPanel = () => {
             <th>{t('ID')}</th>
             <th>{t('Name')}</th>
             <th>{t('E-mail')}</th>
-            <th>{t('Role')}</th>
+            <th>{t('Admin')}</th>
             <th>{t('Status')}</th>
           </tr>
         </thead>
@@ -131,7 +131,7 @@ const AdminPanel = () => {
               <td>{user.id}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
-              <td>{user.role}</td>
+              <td>{user.isAdmin ? t('Yes') : t('No')}</td>
               <td>{user.status}</td>
             </tr>
           ))}

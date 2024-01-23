@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { TagCloud } from 'react-tagcloud';
 import { useTranslation } from "react-i18next";
 
 
-const TagsCloud = () => {
+const TagsCloud = ({tagsData}) => {
     const { t } = useTranslation();
     const [tags, setTags] = useState([]);
     useEffect(() => {
-      const fetchTags = async () => {
-        try {
-          const response = await axios.get('/api/items/tags');
-          const tags = response.data.tags;
-          const formattedTags = tags.map(tag => ({ value: tag.name, count: 1 }));
-          setTags(formattedTags);
-        } catch (error) {
-          console.error('Error fetching tags: ', error);
-        }
-      }
-      fetchTags();
+      const formattedTags = tagsData.map(tag => ({ value: tag.name, count: 1 }));
+      setTags(formattedTags);
     }, [])
     return (
       <>

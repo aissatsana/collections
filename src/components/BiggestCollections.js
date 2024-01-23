@@ -1,26 +1,11 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Card, Carousel } from "react-bootstrap";
 import '../styles/biggestcollection.css';
 
-const BiggestCollections = () => {
+const BiggestCollections = ({collections}) => {
   const { t } = useTranslation();
-  const [collections, setCollections] = useState([]);
-
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await axios.get('/api/collection/getTop');
-        setCollections(response.data.collections);
-      } catch (error) {
-        console.error('Error fetching collections: ', error);
-      }
-    };
-    fetchCollections();
-  }, []);
-
   return (
     <>
       {collections.length > 0 ? (

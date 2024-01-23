@@ -13,6 +13,7 @@ import Collection from './pages/Collection'
 import CreateItem from './pages/CreateItem';
 import Item from './pages/Item';
 import AdminPanel from './pages/AdminPanel';
+import Footer from './components/Footer';
 
 function App() {
   const { theme } = useTheme();
@@ -39,6 +40,7 @@ function App() {
             <Route path="/item/:itemId" element={<Item />} />
             <Route path="/admin" element={<AdminPanel />} />
           </Routes>
+          <Footer />
         </div>
       </Router>
     </I18nextProvider>
