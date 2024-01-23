@@ -78,6 +78,7 @@ model items {
   id                  Int                   @id @default(autoincrement())
   name                String                @db.VarChar(255)
   collection_id       Int
+  user_id             Int
   created_at          DateTime?             @default(now()) @db.Timestamptz(6)
   updated_at          DateTime?             @default(now()) @db.Timestamptz(6)
   comments            comments[]
@@ -85,6 +86,7 @@ model items {
   items_custom_fields items_custom_fields[]
   tags                itemtags[]            @relation("ItemToTags")
   likes               likes[]
+  users               users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_id")
 }
 
 model items_custom_fields {
@@ -134,4 +136,5 @@ model users {
   comments    comments[]
   likes       likes[]
   tokens      tokens[]
+  items       items[]
 }

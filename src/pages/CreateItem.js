@@ -50,6 +50,7 @@ const CreateItem = () => {
 
   const handleCreateItem = async () => {
     let apiUrl = `/api/items/${collection.id}/items`;
+    const token = JSON.parse(localStorage.getItem('token'));
     if (itemId) {
       apiUrl = `/api/items/${collection.id}/item/${itemId}/update`;
     }
@@ -58,6 +59,10 @@ const CreateItem = () => {
         name: itemName,
         tags: selectedTags,
         fieldValues,
+      }, {
+        headers: {
+          'Authorization': token, 
+        }
       });
       if (response.status === 200) {
         navigate(`/collection/${collection.id}`);

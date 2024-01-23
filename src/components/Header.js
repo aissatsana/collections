@@ -6,6 +6,7 @@ import LangSwitcher from './LangSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import SearchComponent from './SearchComponent';
 
 const Header = () => {
     const { t } = useTranslation();
@@ -31,9 +32,10 @@ const Header = () => {
       <Navbar>
         <Container className="d-flex align-items-center">
             <Navbar.Brand className="mr-4" href="/">My Collection</Navbar.Brand>
-            <Form inline="true">
+            {/* <Form inline="true">
                 <FormControl type="text" placeholder={`${t('Search')}...`} className="mr-sm-2" />
-            </Form>
+            </Form> */}
+            <SearchComponent />
             <LangSwitcher />
             <ThemeSwitcher />
             {isAuthenticated ? (

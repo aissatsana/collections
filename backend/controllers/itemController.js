@@ -203,12 +203,15 @@ exports.deleteItem = async (req, res) => {
 
 exports.createItem = async (req, res) => {
   try {
+    const token = req.headers.authorization;
+    const userId = authService.getUserId(token);
     const collectionId = parseInt(req.params.collectionId, 10);
     const {name, fieldValues, tags} = req.body;
     const createdItem = await prisma.items.create({
       data: {
         name,    
-        collection_id: collectionId 
+        collection_id: collectionId,
+        user_id: userId,
       },
     });
     const itemId = createdItem.id;
@@ -267,5 +270,36 @@ exports.getTags = async (req, res) => {
     throw error;
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+exports.getLastAdded = async (req, res) => {
+  try {
+    const latestItems = await prisma.items.findMany({
+      take: 5, 
+      orderBy: {
+        created_at: 'desc', 
+      },
+      select: {
+        name: true,
+        created_at: true,
+        collections: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+        users: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+    console.log(latestItems);
+    res.status(200).json({ latestItems });
+    
+  } catch (error) {
+    console.error('Error fetching items: ', error)
   }
 }
