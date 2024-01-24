@@ -31,7 +31,7 @@ const CategorySelector = ({ onSelect, currentCategory }) => {
 
 
   return (
-    <DropdownButton className="me-4" id="category-dropdown" title={getTitle()} onSelect={onSelect}>
+    <DropdownButton className="me-4" id="category-dropdown" variant="secondary" title={getTitle()} onSelect={onSelect}>
       {categories.map((category) => (
         <Dropdown.Item key={category.id} eventKey={category.id}>
           {t(category.name)}

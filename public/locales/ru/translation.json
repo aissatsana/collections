@@ -24,7 +24,7 @@
     "Text fields": "Текстовые поля",
     "Name for Field": "Имя для поля",
     "Enter name for string field": "Введите имя для строкового поля",
-    "Enter name for integer field": "Введите имя для числового поля",
+    "Enter name for int field": "Введите имя для числового поля",
     "Enter name for boolean field": "Введите имя для поля да/нет",
     "Enter name for text field": "Введите имя для текстового поля",
     "Enter name for date field": "Введите имя для поля даты",
@@ -46,6 +46,9 @@
     "By name": "По названию",
     "By created date": "По дате создания",
     "By updated date": "По дате обновления",
+    "by name": "по названию",
+    "by created date": "по дате создания",
+    "by updated date": "по дате обновления",
     "Filters": "Фильтры",
     "Apply filter": "Применить фильтры",
     "Sort": "Сортировка",
@@ -87,6 +90,8 @@
     "Enter count": "Введите количество",
     "Comments": "Комментарии",
     "Yes": "Да",
-    "No": "Нет"
+    "No": "Нет",
+    "Old password": "Старый пароль",
+    "New password": "Новый пароль"
 }
   

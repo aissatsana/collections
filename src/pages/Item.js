@@ -5,6 +5,7 @@ import { Container, Row, Col, Spinner} from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import Likes from '../components/Likes';
 import Comments from '../components/Comments';
+import TagsCloud from '../components/TagsCloud';
 
 const Item = () => {
     const { itemId } = useParams();
@@ -72,24 +73,18 @@ const Item = () => {
         </div>
       ) : (
         <Container>
-          <h1>{item.name}</h1>
-          <Row>
-            {item.tags && item.tags.map((tag) => (
-              <span>{tag}</span>
-            ))}
-          </Row>
+            <h1>{item.name}</h1>
 
-          <Row>
             {fields.map((field) => (
-                <Col key={field.field_name} md={6} className="mb-4">
-                <h2 className="mb-2">{field.field_name}</h2>
-                <p>{field.field_value}</p>
-                </Col>
+              <p key={field.field_name} md={6} className="mb-4 d-flex align-items-end gap-1">
+                <h2 className="m-0">{field.field_name}:</h2>
+                <p className="m-0">{field.field_value}</p>
+              </p>
             ))}
-            </Row>
+          <TagsCloud tags={item.tags.map(tag => ({ value: tag, count: 1 }))} />
 
-            <Likes likes={likes} isLiked={isLiked} handleLike={handleLike} />
-            <Comments comments={comments} setComments={setComments} itemId={itemId} userId={userId}/>
+          <Likes likes={likes} isLiked={isLiked} handleLike={handleLike} />
+          <Comments comments={comments} setComments={setComments} itemId={itemId} userId={userId}/>
 
         </Container>
       )}

@@ -53,7 +53,7 @@ function Main() {
             </div>
           </div>
           <LastAddedItems items={lastAddedItemsData} />
-          <TagsCloud tagsData={tagsData} />
+          <TagsCloud tags={tagsData.map(tag => ({ value: tag.name, count: 1 }))} />
         </>
       )}
     </Container>

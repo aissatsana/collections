@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Form, Card, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import CategorySelector from "./CategorySelector";
+import { useTheme } from "../contexts/ThemeContext";
 
 function CollectionsFilter({ onApplyFilter }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const defaultFilter = {
     selectedCategory: null,
     hasImage: false,
@@ -36,7 +38,7 @@ function CollectionsFilter({ onApplyFilter }) {
     onApplyFilter(defaultFilter);
   }
   return (
-    <Card>
+    <Card className={`${theme === 'dark' ? 'bg-dark text-white' : ''}`}>
       <Card.Body>
         <Form>
           <Form.Group controlId="filters">

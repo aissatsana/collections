@@ -126,11 +126,11 @@ const CreateItem = () => {
         <Spinner animation="border" />
       </div>
       ) : (
-        <Container>
+      <Container>
       <h2>Create Item</h2>
       <Form>
         <Form.Group controlId="itemName">
-          <Form.Label>Name</Form.Label>
+          <Form.Label>{t('Name')}</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter item name"

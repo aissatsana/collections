@@ -35,6 +35,7 @@ function CreateCollection() {
           updatedCollectionInfo.name = collection.name;
           updatedCollectionInfo.description = collection.description;
           updatedCollectionInfo.category_id = collection.category_id;
+          updatedCollectionInfo.image = collection.image_url;
           updatedCollectionInfo.fields = {
             string: ['','',''],
             int: ['', '', ''],
@@ -133,6 +134,8 @@ function CreateCollection() {
       console.error('Error uploading collection:', error);
     }
   };
+
+
   
 
   const renderFieldSelector = (type, label) => {
@@ -186,8 +189,11 @@ function CreateCollection() {
             <Form.Label className="me-2">{t('Image')}:</Form.Label>
             <Form.Control className="me-4" type="file" name="image" onChange={handleImageUpload} />
             {collectionId && collectionInfo.image && (
-              <img src={collectionInfo.image} alt="Collection Thumbnail" style={{ maxHeight: '50px', maxWidth: '50px', objectFit: 'cover' }} />
+              <img src={collectionInfo.image} alt="Collection Thumbnail" style={{ maxHeight: '100px', maxWidth: '100px', objectFit: 'cover' }} />
             )}
+            {/* {collectionInfo.image  && (
+              <img src={URL.createObjectURL(collectionInfo.image)} alt="New Collection Thumbnail" style={{ maxHeight: '50px', maxWidth: '50px', objectFit: 'cover' }} />
+            )} */}
           </Form.Group>
         </div>
 

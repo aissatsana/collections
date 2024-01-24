@@ -9,7 +9,7 @@ function Profile () {
     return (
             <Container className="mt-3">
                 <h1 className='visually-hidden'>{t('Profile')}</h1>
-                <Tabs defaultActiveKey="collections" id="profile-menu" className="mb-3">
+                <Tabs defaultActiveKey="collections" id="profile-menu" className="mb-3" variant="secondary">
                     <Tab eventKey="collections" title={t('Collections')}>
                       <UserCollections />
                     </Tab>
