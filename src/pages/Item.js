@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col} from "react-bootstrap";
+import { Container, Row, Col, Spinner} from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import Likes from '../components/Likes';
 import Comments from '../components/Comments';
@@ -13,6 +13,7 @@ const Item = () => {
     const [likes, setLikes] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(true);
     const { userId } = useAuth();
 
     useEffect(() => {
@@ -31,8 +32,10 @@ const Item = () => {
             setLikes(parseInt(response.data.likes.count));
             setIsLiked(response.data.likes.isUserLiked);
             setComments(response.data.comments);
+            setLoading(false);
           } catch (error) {
             console.error('Error fetching user collections:', error);
+            setLoading(false);
           }
         };
         fetchItem();
@@ -62,6 +65,12 @@ const Item = () => {
       
     // }
     return (
+      <>
+      {loading ? (
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+          <Spinner animation="border" />
+        </div>
+      ) : (
         <Container>
           <h1>{item.name}</h1>
           <Row>
@@ -83,6 +92,8 @@ const Item = () => {
             <Comments comments={comments} setComments={setComments} itemId={itemId} userId={userId}/>
 
         </Container>
+      )}
+      </>
     );
 }
 export default Item;

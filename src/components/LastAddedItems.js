@@ -2,15 +2,17 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 const LastAddedItems = ({items}) => {
     const { t } = useTranslation();
+    const { theme } = useTheme();
     return (
         <>
-        <h3>{t('Recently added collections')}</h3>
+        <h3>{t('Recently added items')}</h3>
         {items.length > 0 ? (
             <div className='w-100'>
-              <Table striped bordered hover responsive>
+              <Table striped bordered hover responsive variant={theme}>
                 <thead>
                   <tr>
                     <th>{t('Name')}</th>

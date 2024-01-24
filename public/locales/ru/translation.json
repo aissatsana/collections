@@ -74,7 +74,19 @@
     "Enter item's tags": "Введите теги айтема",
     "Tags": "Теги",
     "Welcome to My Collection!": "Добро пожаловать в My Collection!",
-    "Create your unique collections with ease and style. My Collection is your personal assistant for organizing and visualizing your favorite items, artifacts, and memories. We provide you with an intuitive and appealing interface to manage your collections.":
-    "Создайте свои уникальные коллекции с легкостью и стилем. My Collection - это ваш персональный помощник в организации и визуализации ваших любимых вещей, искусственных предметов и воспоминаний. Мы предоставляем вам интуитивно понятный и привлекательный интерфейс для управления вашими коллекциями."
+    "Create your unique collections with ease and style." : "Создайте свои уникальные коллекции с легкостью и стилем.",
+    "My Collection is your personal assistant for organizing and visualizing your favorite items, artifacts, and memories. We provide you with an intuitive and appealing interface to manage your collections.":
+    "My Collection - это ваш персональный помощник в организации и визуализации ваших любимых вещей, искусственных предметов и воспоминаний. Мы предоставляем вам интуитивно понятный и привлекательный интерфейс для управления вашими коллекциями.",
+    "Admin": "Админка",
+    "Recently added items": "Недавно добавленные айтемы",
+    "Collection": "Коллекция",
+    "Username": "Имя пользователя",
+    "Count items": "Количество элементов",
+    "Created by": "Создано",
+    "Change password": "Изменить пароль",
+    "Enter count": "Введите количество",
+    "Comments": "Комментарии",
+    "Yes": "Да",
+    "No": "Нет"
 }
   

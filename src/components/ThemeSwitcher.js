@@ -7,8 +7,8 @@ function ThemeSwitcher () {
         toggleTheme(theme === 'light' ? 'dark' : 'light');
     }
     return (
-        <div className="me-4">
-          <Button className="ms-2" variant="info" onClick={onToggleTheme}>
+        <div className="me-lg-4">
+          <Button className="ms-2" variant="secondary" onClick={onToggleTheme}>
             {theme === 'light' ? (
                 <i className="bi bi-moon"></i>
             ) : (

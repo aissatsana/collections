@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from 'react-bootstrap';
 
 
-function CollectionItem ({ collection, updateCollections }) {
+function CollectionItem ({ collection, updateCollections, isOwner }) {
     const { t } = useTranslation();
     const handleDelete = async () => {
       try {
@@ -36,14 +36,19 @@ function CollectionItem ({ collection, updateCollections }) {
         </h3>
         <p>{collection.description}</p>
       </div>
-      <div className="d-flex flex-column ms-auto">
-        <Link to={`/collection/edit/${collection.id}`} className="btn btn-primary mb-2">
-            {t('Edit')}
-        </Link>
-        <Button className="btn btn-primary" onClick={handleDelete}>
-            {t('Delete')}
-        </Button>
-      </div>
+      {isOwner && (
+        <div className="d-flex flex-column ms-auto">
+          <Link to={`/collection/edit/${collection.id}`} className="btn  btn-secondary mb-2">
+            <span className='visually-hidden'>{t('Edit')}</span>
+            <i class="bi bi-pencil"></i>
+          </Link>
+          <Button className="btn btn-secondary" onClick={handleDelete}>
+            <span className='visually-hidden'>{t('Delete')}</span>
+            <i class="bi bi-trash"></i>
+          </Button>
+        </div>
+
+      )}
     </div>
 )};
 

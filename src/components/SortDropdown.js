@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 const SortDropdown = ({ onSelect, sortMethod }) => {
   const { t } = useTranslation();
   return (
-    <DropdownButton className="me-4" id="sort-collection" title={`Sort by ${sortMethod}`} onSelect={onSelect}>
+    <DropdownButton className="me-4" id="sort-collection" title={`${t('Sort by')} ${t(sortMethod)}`} onSelect={onSelect}>
       <Dropdown.Item key="name" eventKey="name">
         {t('By name')}
       </Dropdown.Item>

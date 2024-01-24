@@ -3,19 +3,21 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Card, Carousel } from "react-bootstrap";
 import '../styles/biggestcollection.css';
+import { useTheme } from '../contexts/ThemeContext';
 
 const BiggestCollections = ({collections}) => {
+  const { theme } = useTheme();
   const { t } = useTranslation();
   return (
     <>
       {collections.length > 0 ? (
         <div className='w-100'>
-          <Carousel>
+          <Carousel className={theme}>
             {collections.map((collection) => (
               <Carousel.Item key={collection.id}>
-                <Card className="w-100 p-3 align-items-center">
+                <Card className={`w-100 p-3 align-items-center ${theme === 'dark' ? 'bg-dark text-white' : ''}`}>
                   <h4>
-                    <Link to={`/collection/${collection.id}`}>
+                    <Link to={`/collection/${collection.id}`} className="link">
                       {collection.name}
                     </Link>
                   </h4>

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Form, Card, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../contexts/ThemeContext";
 
 function ItemFilter({ onApplyFilter }) {
+  const { theme } = useTheme();
   const { t } = useTranslation();
   const defaultFilter = {
     hasComments: null,
@@ -35,7 +37,7 @@ function ItemFilter({ onApplyFilter }) {
   }
 
   return (
-    <Card className="me-2">
+    <Card className={`me-2 ${theme === 'dark' ? 'bg-dark text-white' : ''}`}>
       <Card.Body>
         <Form>
           <Form.Group controlId="filters">
@@ -44,7 +46,7 @@ function ItemFilter({ onApplyFilter }) {
             </Form.Label>
             <Form.Check
               type="checkbox"
-              label={t('Has comments')}
+              label={t('With comments')}
               checked={filterOptions.hasComments}
               onChange={() => handleCheckboxChange('hasComments')}
               className="mt-2 mb-2"

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Container } from 'react-bootstrap';
+import { Form, Button, Container, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CategorySelector from '../components/CategorySelector';
+import axios from 'axios';
 
 function CreateCollection() {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { collectionId } = useParams();
   const [collectionInfo, setCollectionInfo] = useState({
@@ -24,14 +26,15 @@ function CreateCollection() {
 
   useEffect(() => {
     if (collectionId) {
+      setLoading(true);
       const fetchData = async () => {
         try {
-          const response = await fetch(`/api/collection/${collectionId}`);
-          const data = await response.json();
+          const response = await axios.get(`/api/collection/${collectionId}`);
+          const collection = response.data.collection;
           let updatedCollectionInfo = {};
-          updatedCollectionInfo.name = data.collection.name;
-          updatedCollectionInfo.description = data.collection.description;
-          updatedCollectionInfo.category_id = data.collection.category_id;
+          updatedCollectionInfo.name = collection.name;
+          updatedCollectionInfo.description = collection.description;
+          updatedCollectionInfo.category_id = collection.category_id;
           updatedCollectionInfo.fields = {
             string: ['','',''],
             int: ['', '', ''],
@@ -39,20 +42,22 @@ function CreateCollection() {
             boolean: ['', '', ''],
             date: ['', '', ''],
           };
-          for (let el in data.collection) {
-            if (el.startsWith('custom') && el.endsWith('name') && data.collection.el !== '') {
+          for (let el in collection) {
+            if (el.startsWith('custom') && el.endsWith('name') && collection.el !== '') {
               const field = el.split('_')[1];
               const fieldType = field.slice(0, -1);
               const index = parseInt(field.slice(-1)) - 1;
-              updatedCollectionInfo.fields[fieldType][index] = data.collection[el];
+              updatedCollectionInfo.fields[fieldType][index] = collection[el];
               }
           }
           setCollectionInfo((prevInfo) => ({
             ...prevInfo,
             ...updatedCollectionInfo,
           }));
+          setLoading(false);
         } catch (error) {
           console.error('Error fetching collection:', error);
+          setLoading(false);
         }
       };
       fetchData();
@@ -151,6 +156,12 @@ function CreateCollection() {
   };
 
   return (
+    <>
+    {loading ? (
+      <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+      <Spinner animation="border" />
+    </div>
+    ) : (
     <Container className="mt-3">
       <h1>{collectionId ? t("Edit Collection") : t("Create Collection")}</h1>
       <Form onSubmit={handleSubmit}>
@@ -165,7 +176,10 @@ function CreateCollection() {
         <div className="d-flex my-4">
           <Form.Group controlId="category_id" className="d-flex align-items-end">
             <Form.Label className="me-2">{t('Category')}:</Form.Label>
-            <CategorySelector currentCategory={collectionInfo.category_id} onSelect={(selectedCategory) => handleInputChange({ target: { name: 'category_id', value: selectedCategory }})} />
+            <CategorySelector 
+              currentCategory={collectionInfo.category_id} 
+              onSelect={(selectedCategory) => handleInputChange({ target: { name: 'category_id', value: selectedCategory }})}
+            />
           </Form.Group>
 
           <Form.Group controlId="image" className="d-flex align-items-end">
@@ -182,11 +196,13 @@ function CreateCollection() {
         {renderFieldSelector('text', 'Text fields')}
         {renderFieldSelector('boolean', `Yes/No fields`)}
         {renderFieldSelector('date', 'Date fields')}
-        <Button variant="primary" type="submit">
+        <Button variant="secondary" type="submit">
           {collectionId ? t("Update Collection") : t('Create collection')}
         </Button>
       </Form>
     </Container>
+    )}
+    </>
   );
 }
 

@@ -40,12 +40,18 @@
   &:hover {
     opacity: 0.8;
   }
+}
 
-  .dark {
+.dark {
+  .link {
     color: white;
 
     &:hover {
       color: lightgrey;
     }
   }
+}
+
+.container {
+  flex-grow: 1;
 }

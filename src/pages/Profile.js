@@ -11,7 +11,7 @@ function Profile () {
                 <h1 className='visually-hidden'>{t('Profile')}</h1>
                 <Tabs defaultActiveKey="collections" id="profile-menu" className="mb-3">
                     <Tab eventKey="collections" title={t('Collections')}>
-                        <UserCollections />
+                      <UserCollections />
                     </Tab>
                     <Tab eventKey="profile" title={t('Profile')}>
                       <ChangeUserInfo />

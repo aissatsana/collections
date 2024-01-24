@@ -127,11 +127,11 @@ async function getImageUrl(fileName) {
 
 const getCollectionById = async (collectionId) => {
   try {
-    const collection = prisma.collections.findUnique({
+    const collection = await prisma.collections.findUnique({
       where: {
         id: parseInt(collectionId,10)
       }
-    })
+    });
     if (collection.image_url) {
       const imageUrl = await getImageUrl(collection.image_url);
       collection.image_url = imageUrl;

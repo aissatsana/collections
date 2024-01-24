@@ -11,24 +11,24 @@ const CategorySelector = ({ onSelect, currentCategory }) => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('/data/categories');
-        console.log(response.data);
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching themes:', error);
       }
     };
-
     fetchCategories();
   }, []);
 
   const getTitle = () => {
-    if (currentCategory) {
-        const categoryObj = categories.find(cat => cat.id === currentCategory);
+    if (currentCategory && categories && categories.length > 0) {
+      const categoryObj = categories.find((cat) => cat.id === currentCategory);
+      if (categoryObj) {
         return t(categoryObj.name);
-    } else {
-        return t('Select category');
+      }
     }
-  }
+    return t('Select category');
+  };
+
 
   return (
     <DropdownButton className="me-4" id="category-dropdown" title={getTitle()} onSelect={onSelect}>

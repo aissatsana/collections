@@ -9,7 +9,7 @@ function LangSwitcher () {
     };
     
     return (
-        <Dropdown as={ButtonGroup} className="ms-auto me-4">
+        <Dropdown as={ButtonGroup} className="ms-lg-auto me-lg-4">
         <Dropdown.Toggle variant="secondary" id="language-dropdown">
             {i18n.language === 'en' ? 'English' : 'Русский'}
         </Dropdown.Toggle>

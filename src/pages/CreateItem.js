@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, Spinner } from "react-bootstrap";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ const CreateItem = () => {
   const [itemName, setItemName] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
+  const [loading, setLoading] = useState(false);
   const handleChange = (fieldName, value, fieldType) => {
     setFieldValues((prevFieldValues) => ({
       ...prevFieldValues,
@@ -29,6 +30,7 @@ const CreateItem = () => {
 
   useEffect(() => {
     if (itemId) {
+      setLoading(true)
       const fetchItemData = async () => {
         try {
           const response = await axios.get(`/api/items/${itemId}`);
@@ -39,8 +41,10 @@ const CreateItem = () => {
           fieldsData.forEach(el => {
             handleChange(el.field_name, el.field_value, el.field_type)
           });
+          setLoading(false)
         } catch (error) {
           console.error('Error fetching item data:', error);
+          setLoading(false)
         }
       };
       fetchItemData();
@@ -116,6 +120,12 @@ const CreateItem = () => {
   };
 
     return (
+      <>
+      {loading ? (
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+        <Spinner animation="border" />
+      </div>
+      ) : (
         <Container>
       <h2>Create Item</h2>
       <Form>
@@ -148,6 +158,8 @@ const CreateItem = () => {
         </Button>
       </Form>
     </Container>
+    )}
+    </>
     )
 }
 

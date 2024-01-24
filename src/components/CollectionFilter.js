@@ -73,7 +73,7 @@ function CollectionsFilter({ onApplyFilter }) {
               id="hasCustomFieldsCheckbox"
             />
 
-            <Button className="w-100 mb-2" variant="primary" onClick={handleApplyFilter}>
+            <Button className="w-100 mb-2" variant="secondary" onClick={handleApplyFilter}>
               {t('Apply filter')}
             </Button>
             <Button className="w-100" variant="secondary" onClick={handleResetFilters}>

@@ -5,15 +5,19 @@ import axios from "axios";
 import CollectionItem from "./CollectionItem";
 import CollectionFilter from "./CollectionFilter";
 import SortDropdown from "./SortDropdown";
-import { Button } from "react-bootstrap";
+import { Spinner, Button } from "react-bootstrap";
+import { useAuth } from '../contexts/AuthContext';
 
 function UserCollections () {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
   const [userCollections, setUserCollections] = useState([]);
   const [originalCollections, setOriginalCollections] = useState([]);
   const [sortMethod, setSortMethod] = useState('name'); 
   const isMobile = window.innerWidth <= 768;
   const [showFilters, setShowFilters] = useState(!isMobile);
+  const { userId, isAuthenticated } = useAuth();
+
 
   useEffect(() => {
     const fetchUserCollections = async () => {
@@ -27,8 +31,10 @@ function UserCollections () {
         });
         setOriginalCollections(response.data.collections);
         setUserCollections(sortCollections(response.data.collections));
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching user collections:', error);
+        setLoading(false);
       }
     };
     fetchUserCollections();
@@ -81,6 +87,12 @@ function UserCollections () {
 
   return (
     <>
+    {loading ? ( 
+      <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+        <Spinner animation="border" />
+      </div>
+    ) : ( 
+    <>
       <div className="d-flex justify-content-between">
         {/* <h2>{t('Your collections')}:</h2> */}
         <div className="d-flex">
@@ -105,10 +117,13 @@ function UserCollections () {
             key={collection.id}
             collection={collection}
             updateCollections={updateCollections}
+            isOwner={isAuthenticated && userId === collection.user_id}
             />
           ))}
         </div>
       </div>
+    </>
+    )}
     </>
   )
 }

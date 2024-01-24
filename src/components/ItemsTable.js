@@ -4,9 +4,11 @@ import { Row, Col, Table, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import SortDropdown from './SortDropdown';
 import ItemFilter from './ItemFilter';
+import { useTheme } from '../contexts/ThemeContext';
 
 const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
   const [sortMethod, setSortMethod] = useState('name');
+  const { theme } = useTheme();
   const [userItems, setUserItems] = useState([]);
   const { t } = useTranslation();
   useEffect(() => {
@@ -72,7 +74,7 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
           <div className='d-flex align-items-start'>
             <SortDropdown onSelect={onSelectSort} sortMethod={sortMethod} />
             {isOwner && (
-              <Link to={`/collection/${collectionId}/item`} state={{collection}}  className="btn">
+              <Link to={`/collection/${collectionId}/item`} state={{collection}}  className="btn btn-secondary">
                 {t('Add new item')}
               </Link>
             )}
@@ -82,19 +84,23 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
         <ItemFilter onApplyFilter={onApplyFilter}/>
         {userItems.length > 0 ? (
           <div className='w-100'>
-            <Table striped bordered hover responsive>
+            <Table striped bordered hover responsive variant={theme}>
               <thead>
                 <tr>
                   <th>{t('Name')}</th>
-                  <th></th>
-                  <th></th>
+                  {isOwner && ( 
+                    <>
+                      <th></th>
+                      <th></th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {userItems.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <Link to={`/item/${item.id}`}>
+                      <Link to={`/item/${item.id}`} className="link">
                         {item.name}
                       </Link>
                     </td>
@@ -102,12 +108,14 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
                       <>
                       <td>
                         <Link to={`/collection/${collectionId}/edit/${item.id}`} state={{collection}} className="btn btn-secondary">
-                          {t('Edit')}
+                          <span className="visually-hidden">{t('Edit')}</span>
+                          <i class="bi bi-pencil"></i>
                         </Link>
                       </td>
                       <td>
-                        <Button variant="danger" onClick={() => handleDelete(item.id)} className="btn ml-2">
-                          {t('Delete')}
+                        <Button onClick={() => handleDelete(item.id)} className="btn btn-secondary ml-2">
+                          <span className='visually-hidden'>{t('Delete')}</span>
+                          <i class="bi bi-trash"></i>
                         </Button>
                       </td>
                       </>

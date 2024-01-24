@@ -79,7 +79,7 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
                 onChange={(e) => setNewComment(e.target.value)}              
             />
           </Form.Group>
-          <Button variant="primary" type="button" onClick={handleAddComment}>
+          <Button variant="secondary" type="button" onClick={handleAddComment}>
             {t('Add comment')}
           </Button>
         </Form>
