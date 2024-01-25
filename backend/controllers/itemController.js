@@ -5,9 +5,22 @@ const authService = require('../services/authService');
 exports.getItems = async (req, res) => {
   try {
     const collectionId = req.params.collectionId;
+    // const items = await prisma.items.findMany({
+    //   where: {
+    //     collection_id: parseInt(collectionId,10),
+    //   },
+    //   include: {
+    //     _count: {
+    //       select: { likes: true },
+    //     },
+    //     comments: {
+    //       select: { id: true },
+    //     },
+    //   },
+    // });
     const items = await prisma.items.findMany({
       where: {
-        collection_id: parseInt(collectionId,10),
+        collection_id: parseInt(collectionId, 10),
       },
       include: {
         _count: {
@@ -15,6 +28,13 @@ exports.getItems = async (req, res) => {
         },
         comments: {
           select: { id: true },
+        },
+        items_custom_fields: {
+          where: {
+            field_type: {
+              in: ['string', 'int'],
+            },
+          },
         },
       },
     });
@@ -281,6 +301,7 @@ exports.getLastAdded = async (req, res) => {
         created_at: 'desc', 
       },
       select: {
+        id: true,
         name: true,
         created_at: true,
         collections: {

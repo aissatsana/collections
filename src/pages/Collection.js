@@ -14,14 +14,24 @@ const Collection = () => {
   const [loading, setLoading] = useState(true);
   const { isAuthenticated, userId } = useAuth();
   const [isOwner, setIsOwner] = useState(false);
+  const [fieldNames, setFieldNames] = useState([]);
 
   useEffect(() => {
     const fetchCollection = async () => {
       try {
         const response = await axios.get(`/api/collection/${collectionId}`);
-        setCollection(response.data.collection);
-        console.log(response.data.collection)
-        setIsOwner(isAuthenticated && userId === response.data.collection.user_id);
+        const collection = response.data.collection;
+        setCollection(collection);
+        console.log(collection);
+        setIsOwner(isAuthenticated && userId === collection.user_id);
+        const fields = Object.keys(collection)
+        .filter(field => field.startsWith('custom_') && collection[field] && field.endsWith('state'))
+        .map(field => {
+          const fieldType = field.split('_')[1].slice(0, -1);
+          return (fieldType === 'string' || fieldType === 'int') ? collection[field.slice(0, -5) + 'name'] : null;
+        })
+        .filter(field => field !== null);
+        setFieldNames(fields);
       } catch (error) {
         console.error('Error fetching collection:', error);
         setLoading(false);
@@ -68,7 +78,20 @@ const Collection = () => {
           )}
         </Col>
       </Row>
-      <ItemsTable originalItems={originalItems} isOwner={isOwner} collection={collection} collectionId={collectionId} />
+      {originalItems.length > 0 ? (
+        <ItemsTable 
+          originalItems={originalItems} 
+          isOwner={isOwner} 
+          collection={collection} 
+          collectionId={collectionId} 
+          fieldNames={fieldNames}
+        />
+      ) : (
+        <p className="h3" style={{fontSize: "3rem", opacity: '0.5', textAlign: "center"}}>
+        {t('There is nothing here yet')}<br />
+        <i class="bi bi-emoji-frown"></i>
+        </p>
+      )}
     </Container>
       )
     )}

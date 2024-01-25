@@ -5,12 +5,13 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 
 const LastAddedItems = ({items}) => {
+  console.log(items);
     const { t } = useTranslation();
     const { theme } = useTheme();
     return (
         <>
         <h3>{t('Recently added items')}</h3>
-        {items.length > 0 ? (
+        {items.length > 0 && (
             <div className='w-100'>
               <Table striped bordered hover responsive variant={theme}>
                 <thead>
@@ -41,8 +42,6 @@ const LastAddedItems = ({items}) => {
                 </tbody>
               </Table>
             </div>
-          ) : (
-            <p>Пока здесь ничего нет</p>
           )} 
     </>
     )

@@ -5,6 +5,7 @@ import LastAddedItems from '../components/LastAddedItems';
 import BiggestCollections from '../components/BiggestCollections';
 import TagsCloud from '../components/TagsCloud';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function Main() {
   const { t } = useTranslation();
@@ -47,6 +48,9 @@ function Main() {
               <h1>{t('Welcome to My Collection!')}</h1>
               <p>{t('Create your unique collections with ease and style.')}</p>
               <p>{t('My Collection is your personal assistant for organizing and visualizing your favorite items, artifacts, and memories. We provide you with an intuitive and appealing interface to manage your collections.')}</p>
+              <Link to="/collections"className="my-2 btn">
+                {t('Browse collections')}
+              </Link>
             </div>
             <div className="col-md-5">
               <BiggestCollections collections={biggestCollectionsData} />

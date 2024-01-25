@@ -8,7 +8,7 @@ import SortDropdown from "./SortDropdown";
 import { Spinner, Button } from "react-bootstrap";
 import { useAuth } from '../contexts/AuthContext';
 
-function UserCollections () {
+const UserCollections = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [userCollections, setUserCollections] = useState([]);
@@ -69,7 +69,7 @@ function UserCollections () {
       return (
         (!filterOptions.selectedCategory || collection.category_id === filterOptions.selectedCategory) &&
         (!filterOptions.hasImage || collection.image_url !== null) &&
-        (!filterOptions.hasItems || collection.hasitems) &&
+        (!filterOptions.hasItems || collection.itemCount) &&
         (!filterOptions.hasCustomFields || isCollectionHasCustomFields(collection))
       );
     });
@@ -93,33 +93,35 @@ function UserCollections () {
       </div>
     ) : ( 
     <>
-      <div className="d-flex justify-content-between">
-        {/* <h2>{t('Your collections')}:</h2> */}
-        <div className="d-flex">
+      <div className="d-flex justify-content-md-between flex-column flex-md-row align-items-start gap-1 gap-md-0">
           <SortDropdown onSelect={onSelect} sortMethod={sortMethod}/>
-          <Link to="/collection/create" className="btn mb-4">
-            {t('Create collection')}
-          </Link>
+          {isAuthenticated && 
+            <Link to="/collection/create" className="btn mb-4">
+              {t('Create collection')}
+            </Link>
+          }
           {isMobile && (
-            <Button className="btn" onClick={toggleFilters}>
+            <Button className="btn" variant="secondary" onClick={toggleFilters}>
               {t('Filters')}
             </Button>
           )}
-        </div>
       </div>
       <div className="d-flex flex-column flex-md-row justify-content-between">
-        <div>
-          {showFilters && <CollectionFilter onApplyFilter={onApplyFilter} />}
-        </div>
+        {showFilters && <CollectionFilter onApplyFilter={onApplyFilter} />}
         <div className={isMobile ? "w-100 mt-3" : "ms-4 w-100"}>
-          {userCollections && userCollections.map(collection => (
+          {userCollections.length > 0 ? userCollections.map(collection => (
             <CollectionItem
             key={collection.id}
             collection={collection}
             updateCollections={updateCollections}
             isOwner={isAuthenticated && userId === collection.user_id}
             />
-          ))}
+          )): (
+            <p className="h3" style={{fontSize: "3rem", opacity: '0.5', textAlign: "center"}}>
+              {t('There is nothing here yet')}<br />
+              <i class="bi bi-emoji-frown"></i>
+            </p>
+          )}
         </div>
       </div>
     </>

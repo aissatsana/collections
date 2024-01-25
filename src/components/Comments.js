@@ -10,7 +10,7 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
   const { t } = useTranslation();
   const [newComment, setNewComment] = useState('');
   const [socket, setSocket] = useState(null);
-  const { username } = useAuth();
+  const { username, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const socket = io(process.env.REACT_APP_SOCKET_SERVER); 
@@ -68,22 +68,24 @@ const Comments = ({ comments, setComments, itemId, userId }) => {
           </Card>
         ))}
       </div>
-      <div className="mt-4">
-        <Form>
-          <Form.Group controlId="commentTextarea" className="mb-2">
-            <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder={t('Enter your comment')}             
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}              
-            />
-          </Form.Group>
-          <Button variant="secondary" type="button" onClick={handleAddComment}>
-            {t('Add comment')}
-          </Button>
-        </Form>
-      </div>
+      {isAuthenticated && (
+        <div className="mt-4">
+          <Form>
+            <Form.Group controlId="commentTextarea" className="mb-2">
+              <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder={t('Enter your comment')}             
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}              
+              />
+            </Form.Group>
+            <Button variant="secondary" type="button" onClick={handleAddComment}>
+              {t('Add comment')}
+            </Button>
+          </Form>
+        </div>
+      )}
     </>
   );
 };

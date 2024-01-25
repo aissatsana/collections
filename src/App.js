@@ -15,6 +15,7 @@ import Item from './pages/Item';
 import AdminPanel from './pages/AdminPanel';
 import Footer from './components/Footer';
 import { useAuth } from './contexts/AuthContext';
+import Collections from './pages/Collections';
 
 function App() {
   const { theme } = useTheme();
@@ -32,6 +33,7 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Main />} />
+            <Route path="/collections" element={<Collections />} />
             <Route path="/collection/create" element={<CreateCollection />} />
             <Route path="/collection/edit/:collectionId" element={<CreateCollection />} />
             <Route path="/collection/:collectionId" element={<Collection />} />

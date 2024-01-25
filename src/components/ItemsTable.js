@@ -6,7 +6,7 @@ import SortDropdown from './SortDropdown';
 import ItemFilter from './ItemFilter';
 import { useTheme } from '../contexts/ThemeContext';
 
-const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
+const ItemsTable = ({ originalItems, isOwner, collection, collectionId, fieldNames }) => {
   const [sortMethod, setSortMethod] = useState('name');
   const { theme } = useTheme();
   const [userItems, setUserItems] = useState([]);
@@ -60,8 +60,8 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
   const filterItems = (items, filterOptions) => {
     const filteredItems = items.filter(item => {
       return (
-        (!filterOptions.hasComments || item.has_comments) &&
-        (!filterOptions.countLikes || item.count_likes >= filterOptions.countLikes) 
+        (!filterOptions.hasComments || item.comments.length > 0) &&
+        (!filterOptions.countLikes || item._count.likes >= filterOptions.countLikes) 
       );
     });
     return filteredItems;
@@ -88,6 +88,9 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
               <thead>
                 <tr>
                   <th>{t('Name')}</th>
+                  {fieldNames.length > 0 && fieldNames.map((field) => (
+                    <th>{field}</th>
+                  ))}
                   {isOwner && ( 
                     <>
                       <th></th>
@@ -104,6 +107,11 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
                         {item.name}
                       </Link>
                     </td>
+                    {fieldNames.length > 0 && fieldNames.map((fieldName) => (
+                    <td key={fieldName}>
+                      {item.items_custom_fields.find(field => field.field_name === fieldName)?.field_value || ''}
+                    </td>
+                    ))}
                     {isOwner && (
                       <>
                       <td>
@@ -126,7 +134,10 @@ const ItemsTable = ({ originalItems, isOwner, collection, collectionId }) => {
             </Table>
           </div>
         ) : (
-          <p>Пока здесь ничего нет</p>
+          <p className="h3" style={{fontSize: "3rem", opacity: '0.5', textAlign: "center"}}>
+            {t('There is nothing here yet')}<br />
+            <i class="bi bi-emoji-frown"></i>
+          </p>
         )} 
         </div>
       </Col>
