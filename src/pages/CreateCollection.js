@@ -36,6 +36,7 @@ function CreateCollection() {
           updatedCollectionInfo.description = collection.description;
           updatedCollectionInfo.category_id = collection.category_id;
           updatedCollectionInfo.image = collection.image_url;
+          console.log(updatedCollectionInfo.image);
           updatedCollectionInfo.fields = {
             string: ['','',''],
             int: ['', '', ''],
@@ -93,50 +94,26 @@ function CreateCollection() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let imageUrl = null;
-      if (collectionInfo.image) {
-        const formData = new FormData();
-        formData.append('image', collectionInfo.image);
-        const response = await fetch('/api/collection/uploadImage', {
-          method: 'POST',
-          body: formData,
-        });
-  
-        const result = await response.json();
-        imageUrl = result.imageUrl; 
-      }
-
-      const updatedCollectionInfo = {
-        ...collectionInfo,
-        image_url: imageUrl,
-      };
-      console.log(updatedCollectionInfo);
-      
       let apiUrl = '/api/collection/create';
       if (collectionId) {
         apiUrl = `/api/collection/update/${collectionId}`;
       }
-
+      console.log(collectionInfo)
       const token = JSON.parse(localStorage.getItem('token'));
-      const createCollectionResponse = await fetch(apiUrl, {
-        method: 'POST',
+      const createCollectionResponse = await axios.post(apiUrl, collectionInfo, {
         headers: {
-          'Authorization': `${token}`,
-          'Content-Type': 'application/json',
+          'Authorization': token,
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(updatedCollectionInfo),
       });
   
-      const createCollectionResult = await createCollectionResponse.json();
-      console.log(createCollectionResult);
-      navigate('/profile');
+      if (createCollectionResponse.status === 200) {
+        navigate('/profile');
+      }
     } catch (error) {
       console.error('Error uploading collection:', error);
     }
   };
-
-
-  
 
   const renderFieldSelector = (type, label) => {
     return (
@@ -188,12 +165,13 @@ function CreateCollection() {
           <Form.Group controlId="image" className="d-flex align-items-end">
             <Form.Label className="me-2">{t('Image')}:</Form.Label>
             <Form.Control className="me-4" type="file" name="image" onChange={handleImageUpload} />
-            {collectionId && collectionInfo.image && (
-              <img src={collectionInfo.image} alt="Collection Thumbnail" style={{ maxHeight: '100px', maxWidth: '100px', objectFit: 'cover' }} />
+            {collectionInfo.image && (
+              <img
+                src={typeof collectionInfo.image === 'string' ? collectionInfo.image : URL.createObjectURL(collectionInfo.image)}
+                alt="Collection Thumbnail"
+                style={{ maxHeight: '100px', maxWidth: '100px', objectFit: 'cover' }}
+              />
             )}
-            {/* {collectionInfo.image  && (
-              <img src={URL.createObjectURL(collectionInfo.image)} alt="New Collection Thumbnail" style={{ maxHeight: '50px', maxWidth: '50px', objectFit: 'cover' }} />
-            )} */}
           </Form.Group>
         </div>
 

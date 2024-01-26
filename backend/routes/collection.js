@@ -8,10 +8,9 @@ const upload = multer();
 
 router.post('/create', upload.single('image'), collectionController.createCollection);
 router.get('/getTop', collectionController.getBiggestCollections);
-router.post('/uploadImage', upload.single('image'), collectionController.uploadImage);
 router.get('/userCollections', collectionController.getUserCollections);
 router.get('/:collectionId', collectionController.getCollectionById);
 router.delete('/delete/:collectionId', collectionController.deleteCollection);
-router.post('/update/:collectionId', collectionController.updateCollection);
+router.post('/update/:collectionId', upload.single('image'), collectionController.updateCollection);
 
 module.exports = router;

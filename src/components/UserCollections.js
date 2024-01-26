@@ -29,6 +29,7 @@ const UserCollections = () => {
             'Content-Type': 'application/json',
           },
         });
+        console.log(response.data.collections);
         setOriginalCollections(response.data.collections);
         setUserCollections(sortCollections(response.data.collections));
         setLoading(false);
@@ -69,7 +70,7 @@ const UserCollections = () => {
       return (
         (!filterOptions.selectedCategory || collection.category_id === filterOptions.selectedCategory) &&
         (!filterOptions.hasImage || collection.image_url !== null) &&
-        (!filterOptions.hasItems || collection.itemCount) &&
+        (!filterOptions.hasItems || collection.items.length > 0) &&
         (!filterOptions.hasCustomFields || isCollectionHasCustomFields(collection))
       );
     });

@@ -1,16 +1,6 @@
-//const pool = require('../utils/db');
-//const { storage, bucket } = require('../utils/storage');  
-const { Storage } = require('@google-cloud/storage');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-
-const storage = new Storage({
-  projectId: 'my-collection-410422',
-  keyFilename: 'keyfile.json',
-});
-
-const bucketName = 'my-collection-app';
-const bucket = storage.bucket(bucketName);
+const imageService = require('./imageService');
 
 const mapFieldsToCustomObjects = (type, fieldArray) => {
   return fieldArray.map((field, index) => ({
@@ -33,15 +23,16 @@ const createCustomFieldsObject = (fields) => {
   return customFieldsObject;
 };
 
-const createCollection = async (collectionInfo, userId) => {
+const createCollection = async (collectionInfo, image, userId) => {
   try {
+    const image_url = await imageService.createWebPImage(image);
     const customFieldsObject = createCustomFieldsObject(collectionInfo.fields);
     const createdCollection = await prisma.collections.create({
       data: {
         name: collectionInfo.name,
         description: collectionInfo.description,
-        image_url: collectionInfo.image_url,        
-        category_id: collectionInfo.category_id,
+        image_url,        
+        category_id: parseInt(collectionInfo.category_id, 10),
         user_id: parseInt(userId, 10),
         created_at: new Date(),
         updated_at: new Date(),
@@ -56,53 +47,19 @@ const createCollection = async (collectionInfo, userId) => {
 };
 
 
-
-function uploadImage(fileBuffer, fileName) {
-  return new Promise((resolve, reject) => {
-    const file = bucket.file(`images/${fileName}`);
-    const stream = file.createWriteStream({
-      metadata: {
-        contentType: getContentType(fileName),
-      },
-    });
-
-    stream.on('error', (err) => {
-      console.error('Error uploading image:', err);
-      reject({ error: 'Error uploading image', details: err });
-    });
-
-    stream.on('finish', () => {
-      resolve(`${file.name}`);
-    });
-
-    stream.end(fileBuffer);
-  });
-}
-
-function getContentType(fileName) {
-  const extension = fileName.split('.').pop().toLowerCase();
-  switch (extension) {
-    case 'jpg':
-    case 'jpeg':
-      return 'image/jpeg';
-    case 'png':
-      return 'image/png';
-    default:
-      return 'application/octet-stream'; 
-  }
-}
-
 const getUserCollections = async (userId) => {
   try {
     const userCollections = await prisma.collections.findMany({
       where: {
         user_id: userId,
       },
+      include: {
+        items: true,
+      }
     });
     for (const collection of userCollections) {
       if (collection.image_url) {
-        const imageUrl =  await getImageUrl(collection.image_url);
-        collection.image_url = imageUrl;
+        collection.image_url = await imageService.getImageUrl(collection.image_url);
       }
     }
     return userCollections;
@@ -111,19 +68,6 @@ const getUserCollections = async (userId) => {
   }
 };
 
-async function getImageUrl(fileName) {
-  try {
-    const options = {
-      action: 'read',
-      expires: Date.now() + 15 * 60 * 1000, 
-    };
-    const [signedUrl] = await bucket.file(`${fileName}`).getSignedUrl(options);
-    return signedUrl;
-  } catch (error) {
-    console.error('Error getting image URL:', error);
-    throw error;
-  }
-}
 
 const getCollectionById = async (collectionId) => {
   try {
@@ -133,7 +77,7 @@ const getCollectionById = async (collectionId) => {
       }
     });
     if (collection.image_url) {
-      const imageUrl = await getImageUrl(collection.image_url);
+      const imageUrl = await imageService.getImageUrl(collection.image_url);
       collection.image_url = imageUrl;
     }
     return collection;
@@ -152,26 +96,34 @@ const deleteCollection = async (collectionId) => {
   }
 };
 
-const updateCollection = async (collectionId, name, description, category_id, image_url, fields) => {
+
+const updateCollection = async (collectionId, name, description, category_id, image, fields) => {
   try {
     const customFieldsObject = createCustomFieldsObject(fields);
+    let image_url
+    const areFileNamesEqual = await imageService.areFileNamesEqual(image.originalname, collectionId);
+    if (!areFileNamesEqual) {
+      image_url = await imageService.createWebPImage(image);
+    }
+
+    const updateData = {
+      name,
+      description,
+      category_id: parseInt(category_id, 10),
+      updated_at: new Date(),
+      ...customFieldsObject,
+    };
     await prisma.collections.update({
       where: {
         id: collectionId,
       },
-      data: {
-        name,
-        description,
-        category_id,
-        image_url,
-        updated_at: new Date(),
-        ...customFieldsObject,
-      },
+      data: image_url ? { ...updateData, image_url } : updateData,
     });
   } catch (error) {
     throw error;
   }
 };
+
 const getBiggestCollections = async () => {
   try {
     const topCollections = await prisma.collections.findMany({
@@ -199,7 +151,7 @@ const getBiggestCollections = async () => {
     });
     for (const collection of topCollections) {
       if (collection.image_url) {
-        const imageUrl =  await getImageUrl(collection.image_url);
+        const imageUrl =  await imageService.getImageUrl(collection.image_url);
         collection.image_url = imageUrl;
       }
     }
@@ -218,7 +170,6 @@ const getBiggestCollections = async () => {
 
 module.exports = {
   createCollection,
-  uploadImage,
   getUserCollections,
   getCollectionById,
   deleteCollection,
