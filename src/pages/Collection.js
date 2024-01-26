@@ -78,7 +78,6 @@ const Collection = () => {
           )}
         </Col>
       </Row>
-      {originalItems.length > 0 ? (
         <ItemsTable 
           originalItems={originalItems} 
           isOwner={isOwner} 
@@ -86,12 +85,6 @@ const Collection = () => {
           collectionId={collectionId} 
           fieldNames={fieldNames}
         />
-      ) : (
-        <p className="h3" style={{fontSize: "3rem", opacity: '0.5', textAlign: "center"}}>
-        {t('There is nothing here yet')}<br />
-        <i class="bi bi-emoji-frown"></i>
-        </p>
-      )}
     </Container>
       )
     )}
